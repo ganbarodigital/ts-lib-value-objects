@@ -1,0 +1,43 @@
+{
+  "name": "@ganbarodigital/<<YOUR-PACKAGE-NAME>>",
+  "version": "0.0.1",
+  "description": "Converts human-readable UUIDs to bytes",
+  "repository": "github:ganbarodigital/<<YOUR-PACKAGE-NAME>>",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "npm run clean && tsc -p ./tsconfig.json",
+    "lint": "tslint -p ./tsconfig.json",
+    "prepublishOnly": "npm test && npm run lint",
+    "prepack": "npm run build",
+    "test": "npm run clean && tsc -p ./tsconfig-test.json && jasmine-ts --config=\"src/spec/support/jasmine.json\" \"src/**/*.spec.ts\"",
+    "cover": "rimraf coverage && rimraf .nyc_output && nyc --cache=false npm run test",
+    "clean": "rimraf lib"
+  },
+  "contributors": [
+    "Stuart Herbert <stuherbert@ganbarodigital.com> (https://ganbarodigital.com)"
+  ],
+  "keywords": [
+  ],
+  "files": [
+    "lib/**/*",
+    "CHANGELOG.md",
+    "LICENSE.md",
+    "V1/**"
+  ],
+  "license": "BSD-3-Clause",
+  "dependencies": {
+    "@types/node": "^13.1.2",
+    "tslint": "^5.20.1",
+    "typescript": "^3.7.4"
+  },
+  "devDependencies": {
+    "@ganbarodigital/jasmine-ts": "0.3.1",
+    "@types/jasmine": "^3.5.0",
+    "jasmine": "^3.5.0",
+    "jasmine-ts-console-reporter": "^3.1.1",
+    "nyc": "^15.0.0",
+    "rimraf": "^3.0.0",
+    "ts-node": "<8.0.0"
+  }
+}

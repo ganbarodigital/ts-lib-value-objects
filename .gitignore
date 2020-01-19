@@ -1,0 +1,9 @@
+.nyc_output
+coverage
+index.js
+index.js.map
+src/**/*.d.ts
+src/**/*.map
+lib
+node_modules
+tmp
