@@ -1,8 +1,8 @@
 {
-  "name": "@ganbarodigital/<<YOUR-PACKAGE-NAME>>",
+  "name": "@ganbarodigital/ts-lib-value-objects",
   "version": "0.0.1",
-  "description": "Converts human-readable UUIDs to bytes",
-  "repository": "github:ganbarodigital/<<YOUR-PACKAGE-NAME>>",
+  "description": "Helps you create value objects and type refinements for safer software",
+  "repository": "github:ganbarodigital/ts-lib-value-objects",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
