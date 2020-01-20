@@ -32,5 +32,3 @@
 // POSSIBILITY OF SUCH DAMAGE.
 //
 
-export * from "./DataGuard";
-export * from "./TypeGuard";

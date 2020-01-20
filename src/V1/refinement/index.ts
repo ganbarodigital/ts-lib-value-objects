@@ -32,7 +32,6 @@
 // POSSIBILITY OF SUCH DAMAGE.
 //
 
-export * from "./DataGuarantee";
 export * from "./RefinedNumber";
 export * from "./RefinedPrimitive";
 export * from "./RefinedString";

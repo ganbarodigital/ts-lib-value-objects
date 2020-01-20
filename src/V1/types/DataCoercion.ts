@@ -58,25 +58,3 @@ import { OnError } from "@ganbarodigital/ts-on-error/lib/V1";
  */
 export type DataCoercion<T, GR extends T, EX = object>
   = (input: T, onError: OnError<EX, T>) => GR;
-
-export class DataCoercionWithOnError<T, EX = object> {
-    private readonly f: DataCoercion<T, T, EX>;
-    private readonly onError: OnError<EX, T>;
-
-    public constructor(f: DataCoercion<T, T, EX>, onError: OnError<EX, T>) {
-        this.f = f;
-        this.onError = onError;
-    }
-
-    public coerce(input: T): T {
-        return this.f(input, this.onError);
-    }
-}
-
-export function isDataCoercionWithOnError<T, EX>(input: unknown): input is DataCoercionWithOnError<T, EX> {
-    if (input instanceof DataCoercionWithOnError) {
-        return true;
-    }
-
-    return false;
-}

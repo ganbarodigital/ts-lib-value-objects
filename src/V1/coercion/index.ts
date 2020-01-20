@@ -32,7 +32,6 @@
 // POSSIBILITY OF SUCH DAMAGE.
 //
 
-export * from "./DataCoercion";
 export * from "./CoercedNumber";
 export * from "./CoercedPrimitive";
 export * from "./CoercedString";

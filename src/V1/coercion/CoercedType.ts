@@ -33,7 +33,7 @@
 //
 import { OnError } from "@ganbarodigital/ts-on-error/lib/V1";
 
-import { DataCoercion } from "./DataCoercion";
+import { DataCoercion } from "../types";
 
 /**
  * CoercedType is a base class for defining a subset of any given type.

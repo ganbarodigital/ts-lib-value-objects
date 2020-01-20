@@ -33,7 +33,7 @@
 //
 import { OnError } from "@ganbarodigital/ts-on-error/V1";
 
-import { DataGuarantee } from "./DataGuarantee";
+import { DataGuarantee } from "../types";
 
 /**
  * RefinedType is a base class for defining a subset of any given type.
