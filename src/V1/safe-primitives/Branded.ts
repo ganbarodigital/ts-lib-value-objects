@@ -32,7 +32,13 @@
 // POSSIBILITY OF SUCH DAMAGE.
 //
 
-export * from "./coercion";
-export * from "./refinement";
-export * from "./safe-primitives";
-export * from "./types";
+/**
+ *
+ */
+interface Branding<BrandingT> {
+    _type: BrandingT;
+}
+
+export type Branded<T, BrandingT> = T & Branding<BrandingT>;
+
+export type AnyBranded = Branded<any, any>;

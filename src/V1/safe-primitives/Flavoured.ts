@@ -32,7 +32,14 @@
 // POSSIBILITY OF SUCH DAMAGE.
 //
 
-export * from "./coercion";
-export * from "./refinement";
-export * from "./safe-primitives";
-export * from "./types";
+// the idea of flavouring came from this blog post:
+//
+// https://spin.atomicobject.com/2018/01/15/typescript-flexible-nominal-typing/
+//
+interface Flavouring<FlavourT> {
+    _type?: FlavourT;
+}
+
+export type Flavoured<T, FlavourT> = T & Flavouring<FlavourT>;
+
+export type AnyFlavoured = Flavoured<any, any>;
