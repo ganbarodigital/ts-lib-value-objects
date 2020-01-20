@@ -34,5 +34,5 @@
 
 export * from "./coercion";
 export * from "./refinement";
-export * from "./safe-primitives";
+export * from "./nominals";
 export * from "./types";
