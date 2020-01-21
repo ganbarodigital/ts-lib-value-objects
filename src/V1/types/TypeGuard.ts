@@ -40,7 +40,7 @@
  * It returns `false` otherwise.
  *
  * TypeGuards are a form of runtime robustness check. They're used to
- * make sure that the given data is what you think it is, before you
- * try and use this. It helps to prevent runtime errors.
+ * make sure that the given input is the type you think it is, before you
+ * try and use that input. They help prevent runtime errors.
  */
 export type TypeGuard<T> = (input: unknown) => input is T;

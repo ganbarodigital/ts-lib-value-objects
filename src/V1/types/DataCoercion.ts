@@ -48,9 +48,10 @@ import { OnError } from "@ganbarodigital/ts-on-error/lib/V1";
  * b) it can return a value that does meet the given contract / specification
  *
  * `T` is the type of data to be inspected
+ * - `T` is also the return type of the supplied `OnError` handler
  * `GR` is the return type of the data guarantee function
+ * - it *must* be compatible with `T` in some way
  * `EX` is the type of information passed to the OnError handler
- * `ER` is the return type of the OnError handler
  *
  * When you implement a DataGuarantee, make it a wrapper around one or more
  * TypeGuards and/or DataGuards - and even other DataGuarantees if

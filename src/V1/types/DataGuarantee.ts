@@ -42,10 +42,7 @@ import { OnError } from "@ganbarodigital/ts-on-error/lib/V1";
  *
  * If the given data does not meet the given contract / specification,
  * the DataGuarantee calls the supplied OnError handler. The OnError
- * handler can do any of the following:
- *
- * a) it can throw an Error (ie it never returns), or
- * b) it can return a value that does meet the given contract / specification
+ * handler must throw an Error of some kind.
  *
  * `T` is the type of data to be inspected
  * `EX` is the type of information passed to the OnError handler

@@ -25,6 +25,11 @@ The following changes have been completed, and will be included in the next tagg
 
 ### New
 
+* Added `TypeGuard` function type
+* Added `DataGuard` function type
+* Added `DataGuarantee` function type
+* Added `DataCoercion` function type
+
 ### Fixes
 
 ### Dependencies
