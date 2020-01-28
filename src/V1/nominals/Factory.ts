@@ -33,21 +33,9 @@
 //
 import { OnError } from "@ganbarodigital/ts-on-error/V1";
 
-import { DataCoercion, DataGuarantee } from "../types";
-import { AnyBranded } from "./Branded";
-import { AnyFlavoured } from "./Flavoured";
+import { DataGuarantee } from "../types";
 
-/**
- * This is a type that matches:
- *
- * - all `Branded` types, AND
- * - all `Flavoured` types too
- *
- * We use this as a type-constraint for our factory builders.
- *
- * You can safely use this in your own code.
- */
-export type AnySafePrimitiveType = AnyBranded | AnyFlavoured;
+export type RefinedTypeFactory<BI, BR, EX> = (input: BI, onError?: OnError<EX, never>) => BR;
 
 /**
  * makeRefinedTypeFactory creates factories for your branded and
@@ -64,9 +52,9 @@ export type AnySafePrimitiveType = AnyBranded | AnyFlavoured;
  * and create your branded and flavoured types.
  *
  * `BI` is the input type that your factory accepts (e.g. `string`)
- * `BR` is the type that your factory returns. This must be a `Branded`
- *      type of some kind, or a `Flavoured` type of some kind
- * `EX` is the `EX` generic type for the default OnError handler
+ * `BR` is the type that your factory returns
+ * `EX` is the type of extra information that the `OnError` handlers
+ *      will accept
  *
  * @param mustBe
  *        this will be called every time you use the function that we return.
@@ -76,10 +64,10 @@ export type AnySafePrimitiveType = AnyBranded | AnyFlavoured;
  *        If the caller doesn't provide an `onError` parameter, the function
  *        will call this error handler instead.
  */
-export function makeRefinedTypeFactory<BI, BR extends AnySafePrimitiveType, EX>(
+export const makeRefinedTypeFactory = <BI, BR, EX>(
     mustBe: DataGuarantee<BI, EX>,
     defaultOnError: OnError<EX, never>,
-): (input: BI, onError?: OnError<EX, never>) => BR {
+): RefinedTypeFactory<BI, BR, EX> => {
     return (input: BI, onError?: OnError<EX>): BR => {
         // make sure we have a way to tell the caller if something
         // goes wrong!
@@ -91,48 +79,4 @@ export function makeRefinedTypeFactory<BI, BR extends AnySafePrimitiveType, EX>(
         // we're good at this point
         return (input as unknown) as BR;
     };
-}
-
-/**
- * makeCoercedTypeFactory creates factories for your branded and
- * flavoured types.
- *
- * You tell it:
- *
- * - what input type your factory should accept
- * - the DataCoercion to use
- * - the default error handler to call if the DataGuarantee fails
- * - what output type your factory should return
- *
- * and it will return a type-safe function that you can re-use to validate
- * and create your branded and flavoured types.
- *
- * `BI` is the input type that your factory accepts (e.g. `string`)
- * `BR` is the type that your factory returns. This must be a `Branded`
- *      type of some kind, or a `Flavoured` type of some kind
- * `EX` is the `EX` generic type for the default OnError handler
- *
- * @param mustBe
- *        this will be called every time you use the function that we return.
- *        Make sure that it has no side-effects whatsoever.
- * @param defaultOnError
- *        the function that we return has an optional `onError` parameter.
- *        If the caller doesn't provide an `onError` parameter, the function
- *        will call this error handler instead.
- */
-export function makeCoercedTypeFactory<BI, BR extends AnySafePrimitiveType, EX>(
-    mustBe: DataCoercion<BI, BI, EX>,
-    defaultOnError: OnError<EX, BI>,
-): (input: BI, onError?: OnError<EX, BI>) => BR {
-    return (input: BI, onError?: OnError<EX, BI>): BR => {
-        // make sure we have a way to tell the caller if something
-        // goes wrong!
-        onError = onError ?? defaultOnError;
-
-        // enforce the contract
-        input = mustBe(input, onError);
-
-        // we're good at this point
-        return (input as unknown) as BR;
-    };
-}
+};

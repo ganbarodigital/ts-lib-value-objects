@@ -31,6 +31,9 @@ The following changes have been completed, and will be included in the next tagg
 * Added `DataCoercion` function type
 * Added `ValueObject` interface
 * Added `Value` base class
+* Added `Branded` type
+* Added `RefinedTypeFactory` function
+* Added `makeRefinedTypeFactory` function
 
 ### Fixes
 
