@@ -31,9 +31,46 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
+import { Value } from "./Value";
 
-export * from "./DataCoercion";
-export * from "./DataGuarantee";
-export * from "./DataGuard";
-export * from "./TypeGuard";
-export * from "./Value";
+class ExampleValue extends Value<string> {
+    public static from(input: string): ExampleValue {
+        return new ExampleValue(input);
+    }
+}
+
+describe("new Value()", () => {
+    it("stores the input inside the value object", () => {
+        const inputValue = "123e4567-e89b-12d3-a456-426655440000";
+        const expectedValue = inputValue;
+
+        const unit = ExampleValue.from(inputValue);
+        const actualValue = unit.valueOf();
+
+        expect(actualValue).toEqual(expectedValue);
+    });
+});
+
+describe("Value.valueOf()", () => {
+    it("returns the value stored inside the value object", () => {
+        const inputValue = "123e4567-e89b-12d3-a456-426655440000";
+        const expectedValue = inputValue;
+
+        const unit = ExampleValue.from(inputValue);
+        const actualValue = unit.valueOf();
+
+        expect(actualValue).toEqual(expectedValue);
+    });
+});
+
+describe("Value.isValue()", () => {
+    it("returns true", () => {
+        const inputValue = "123e4567-e89b-12d3-a456-426655440000";
+        const expectedValue = true;
+
+        const unit = ExampleValue.from(inputValue);
+        const actualValue = unit.isValue();
+
+        expect(actualValue).toEqual(expectedValue);
+    });
+});

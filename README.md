@@ -16,6 +16,8 @@ This TypeScript library will help you create value objects and type refinements.
 - [Value Objects](#value-objects)
   - [What Is A Value Object?](#what-is-a-value-object)
   - [How To Build Value Objects](#how-to-build-value-objects)
+  - [`Value.isValue()`](#valueisvalue)
+  - [`Value.valueOf()`](#valuevalueof)
   - [Advantages Of Value Objects](#advantages-of-value-objects)
   - [Disadvantages Of Value Objects](#disadvantages-of-value-objects)
 - [Type Refinements](#type-refinements)
@@ -287,21 +289,121 @@ A _value object_ is:
 
 * an object
 * with a type signature
-* with a constructor that enforces a _data guarantee_
+* with a _smart constructor_ (one that enforces a _data guarantee_)
 * that holds one (and only one!) value
 * that is immutable
 * that allows you to get the stored value
 
 ### How To Build Value Objects
 
-This library currently supports two ways to build value objects:
+Define one (or more!) _data guards_:
 
+```typescript
+const UuidRegex = new RegExp("^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$", "i");
 
+export function isUuidData(input: string): boolean {
+    return UuidRegex.test(input);
+}
+```
+
+Define a _data guarantee_:
+
+```typescript
+import { OnError } from "@ganbarodigital/ts-on-error/V1";
+
+export const InvalidUuidError = Symbol("invalid UUID");
+
+export function mustBeUuid(input: string, onError: OnError): void {
+    if (isUuidData(input)) {
+        return true;
+    }
+
+    return onError(InvalidUuidError, "input is not a valid UUID", { input: input });
+}
+```
+
+Define a class that:
+
+* extends `Value`, and
+* has a _smart constructor_
+
+```typescript
+import { OnError } from "@ganbarodigital/ts-on-error/V1";
+import { Value } from "@ganbarodigital/ts-lib-value-objects/V1";
+
+class Uuid extends Value<string> {
+    public static from(input: string, onError: OnError): Uuid {
+        mustBeUuid(input, onError);
+        return new Uuid(input);
+    }
+}
+```
+
+At this point, you can use the `Uuid` type safely in any of your functions:
+
+```typescript
+function uuidToBytes(uuid: Uuid): Buffer {
+    // convert a well-formatted UUID into binary data
+    return Buffer.from(uuid.valueOf().split("-").join(), "hex");
+}
+```
+
+### `Value.isValue()`
+
+Every value object comes with a `isValue()` method:
+
+```typescript
+class Value {
+    /**
+     * a type-guard.
+     *
+     * added mostly for completeness
+     */
+    isValue(): this is Value<T>;
+}
+```
+
+Honestly, I can't think of an example where you'd need to call it. It's there if you ever need it!
+
+### `Value.valueOf()`
+
+Every value object comes with a `valueOf()` method:
+
+```typescript
+class Value {
+    /**
+     * returns the wrapped value
+     *
+     * for types passed by reference, we do NOT return a clone of any kind.
+     * You have to be careful not to accidentally change this value.
+     */
+    valueOf(): T;
+}
+```
+
+Use `valueOf()` to get access to the wrapped type:
+
+```typescript
+function uuidToBytes(uuid: Uuid): Buffer {
+    // convert a well-formatted UUID into binary data
+    return Buffer.from(uuid.valueOf().split("-").join(), "hex");
+}
+```
+
+Notes:
+
+* The value returned by `valueOf()` may not be immutable. That's out of our control. So be careful how you use it. In particular, avoid `+=`, `-=` type operators.
 
 ### Advantages Of Value Objects
 
+In no particular order ...
+
+* Value objects have type information at runtime. You can use the Javascript `instanceof` operator in your type-guards to be sure that you're working with the type of object that you expect.
+
 ### Disadvantages Of Value Objects
 
+* Value objects perform worse than refined types.
+* Value objects take up more RAM at runtime than refined types.
 
 ## Type Refinements
 

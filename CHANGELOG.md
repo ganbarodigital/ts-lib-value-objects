@@ -29,6 +29,8 @@ The following changes have been completed, and will be included in the next tagg
 * Added `DataGuard` function type
 * Added `DataGuarantee` function type
 * Added `DataCoercion` function type
+* Added `ValueObject` interface
+* Added `Value` base class
 
 ### Fixes
 
