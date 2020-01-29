@@ -59,7 +59,7 @@ How do we do this?
 
 * We define new types that can only contain valid values.
 * We take all of the `isXXX()` kind of checks that are scattered around our code, and put them into _smart constructors_ for these new types.
-* That way, the checks run once (when we create the value), and don't have to run again when we pass the value into functions and methods (because TypeScript knows the value is safe).
+* That way, the checks run once (when we create the value), and don't have to run again when we pass the value into functions and methods (because the TypeScript compiler prevents us passing the wrong type / returning the wrong type).
 * Our functions and methods can then be made simplier, because they know they're receiving a value that is always valid. In many cases, functions and methods can be made to work 100% of the time.
 
 Or, to put it another way, we consolidate most of our defensive programming checks into _smart constructors_, and we write our business logic to always work for our new types.
@@ -75,11 +75,11 @@ We can say that "all UUIDs are strings", but we cannot say that "all strings are
 * We can use a UUID's value as a parameter to any function or method that expects a `string`, and that function / method will work as expected.
 * But if we pass any old string into a function / method that expects a UUID, the function / method probably won't work as expected.
 
-In pure JavaScript (and many other weakly-typed languages!), each function / method would have to call an `isUUID(input)` function first, just to protect itself from a bad input. This is _robustness check_, and an example of _defensive programming_.
+In pure JavaScript (and many other languages!), each function / method would have to call an `isUUID(input)` function first, just to protect itself from a bad input. This is a _robustness check_, and an example of _defensive programming_. You may have also heard it called _programming by contract_.
 
-A call to `isUUID()` is a _runtime check_: it happens every time the function / method calls. There's a performance cost to runtime checks, and that cost adds up very quickly.
+Each call to `isUUID()` is a _runtime check_: it happens every time the function / method calls. There's a performance cost to runtime checks, and that cost adds up very quickly.
 
-We want to use TypeScript to make all of that go away. And there's two ways to do that:
+We want to use TypeScript to replace these runtime checks with _compile-time checks_ instead. And there's two ways to do that:
 
 * we can build a `Uuid` class, and create _value objects_, or
 * we can create a `Uuid` "branded" string, known as a _refined type_
@@ -104,8 +104,9 @@ or
 ```typescript
 function doSomething(uuid: Uuid) { /* ... */ }
 
-// uuid2 is a type refinement
+// uuid2 is a refined type
 // it's actually a 'branded' string, and not an object
+// but, at compile time, TypeScript treats it as a unique type
 const uuid2 = uuidFrom("123e4567-e89b-12d3-a456-426655440000");
 
 // this works
@@ -423,6 +424,7 @@ In no particular order ...
 
 * Value objects perform worse than refined types.
 * Value objects take up more RAM at runtime than refined types.
+* TypeScript v3.7.x (the latest at the time of writing) doesn't correctly support JavaScript's object-to-primitive auto-conversion mechanisms. If you're wrapping a `number`, you might prefer doing that as a _refined type_.
 
 ## Refined Types
 
