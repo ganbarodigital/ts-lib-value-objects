@@ -42,12 +42,12 @@ This TypeScript library will help you create _value objects_ and _refined types_
 
 ```
 # run this from your Terminal
-npm install @ganbarodigital/value-objects
+npm install @ganbarodigital/ts-lib-value-objects
 ```
 
 ```typescript
 // add this import to your Typescript code
-import { RefinedString } from "@ganbarodigital/value-objects/V1"
+import { RefinedString } from "@ganbarodigital/ts-lib-value-objects/V1"
 ```
 
 __VS Code users:__ once you've added a single import anywhere in your project, you'll then be able to auto-import anything else that this library exports.
@@ -143,7 +143,7 @@ Both _value objects_ and _refined types_ rely on a group of underlying, foundati
 A _type guard_ is a function that tells the TypeScript compiler to treat a value as a given type.
 
 ```typescript
-import { TypeGuard } from "@ganbarodigital/value-objects/V1";
+import { TypeGuard } from "@ganbarodigital/ts-lib-value-objects/V1";
 
 const isUuidType: TypeGuard<Uuid> = (input: unknown): input is Uuid => {
     if (input instanceof Uuid) {
@@ -177,7 +177,7 @@ A _data guard_ is a function. It inspects the given data, and returns `true` if 
 Data guards are an example of a _contract_ or _specification_, depending on what programming paradigm you subscribe to :)
 
 ```typescript
-import { DataGuard } from "@ganbarodigital/value-objects/V1";
+import { DataGuard } from "@ganbarodigital/ts-lib-value-objects/V1";
 
 const UuidRegex = new RegExp("^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$", "i");
 
@@ -199,7 +199,7 @@ The `OnError` handler decides which `Error` to throw. The `OnError` handler _alw
 
 ```typescript
 import { OnError } from "@ganbarodigital/ts-on-error/V1";
-import { DataGuarantee } from "@ganbarodigital/value-objects/V1";
+import { DataGuarantee } from "@ganbarodigital/ts-lib-value-objects/V1";
 
 const invalidUuid = Symbol("invalidUuid");
 
@@ -229,7 +229,7 @@ Data guarantees get used in so-called _smart constructors_:
 
 ```typescript
 import { OnError } from "@ganbarodigital/ts-on-error";
-import { RefinedString } from "@ganbarodigital/value-objects";
+import { RefinedString } from "@ganbarodigital/ts-lib-value-objects";
 
 // this is the value object approach
 class Uuid extends RefinedString {
@@ -252,7 +252,7 @@ let uuid = Uuid.from("123e4567-e89b-12d3-a456-426655440000");
 
 ```typescript
 import { OnError } from "@ganbarodigital/ts-on-error";
-import { Branded, makeTypeRefinementFactory } from "@ganbarodigital/value-objects";
+import { Branded, makeTypeRefinementFactory } from "@ganbarodigital/ts-lib-value-objects";
 
 // this is an example of "type refinement", using a "branded" string
 type Uuid = Branded<string, "uuid">;
@@ -285,7 +285,7 @@ The `OnError` handler can do one of two things:
 
 ```typescript
 import { OnError } from "@ganbarodigital/ts-on-error/V1";
-import { DataCoercion } from "@ganbarodigital/value-objects/V1";
+import { DataCoercion } from "@ganbarodigital/ts-lib-value-objects/V1";
 
 const invalidUuid = Symbol("invalidUuid");
 
@@ -352,7 +352,7 @@ Define a class that:
 
 ```typescript
 import { OnError } from "@ganbarodigital/ts-on-error/V1";
-import { Value } from "@ganbarodigital/value-objects/V1";
+import { Value } from "@ganbarodigital/ts-lib-value-objects/V1";
 
 class Uuid extends Value<string> {
     public static from(input: string, onError: OnError): Uuid {
@@ -513,7 +513,7 @@ import {
     Branded,
     RefinedTypeFactory,
     makeRefinedTypeFactory,
-} from "@ganbarodigital/value-objects/V1";
+} from "@ganbarodigital/ts-lib-value-objects/V1";
 
 // this is our branded type
 type Uuid = Branded<string, "uuid">;
@@ -556,7 +556,7 @@ function uuidToBytes(uuid: Uuid): Buffer {
 There's only one difference between _flavoured types_ and _branded types_: you can cast a suitable primitive to a _flavoured type_.
 
 ```typescript
-import { Flavoured } from "@ganbarodigital/value-objects/V1";
+import { Flavoured } from "@ganbarodigital/ts-lib-value-objects/V1";
 
 type Uuid = Flavoured<string, "uuid">;
 
@@ -566,7 +566,7 @@ const uuid = "123e4567-e89b-12d3-a456-426655440000" as Uuid;
 This is very handy for numbers that have different _units of measure_; for example, imperial and metric:
 
 ```typescript
-import { Flavoured } from "@ganbarodigital/value-objects/V1";
+import { Flavoured } from "@ganbarodigital/ts-lib-value-objects/V1";
 
 type inches = Flavoured<number, "feet">;
 type centimetres = Flavoured<number, "metres">;
@@ -648,7 +648,7 @@ Both classes extend the [Value](#value-objects) class documented earlier. They a
 Here's an example of how to create a `Uuid` value object type, using the `RefinedString` class.
 
 ```typescript
-import { RefinedString } from "@ganbarodigital/value-objects/V1";
+import { RefinedString } from "@ganbarodigital/ts-lib-value-objects/V1";
 import { OnError } from "@ganbarodigital/ts-on-error/V1";
 
 const UuidRegex = new RegExp("^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$", "i");

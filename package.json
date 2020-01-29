@@ -1,5 +1,5 @@
 {
-  "name": "@ganbarodigital/value-objects",
+  "name": "@ganbarodigital/ts-lib-value-objects",
   "version": "0.0.1",
   "description": "Helps you create value objects and refined types for safer software",
   "repository": "github:ganbarodigital/ts-lib-value-objects",
