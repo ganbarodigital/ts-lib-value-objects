@@ -36,10 +36,6 @@
 //
 // https://spin.atomicobject.com/2018/01/15/typescript-flexible-nominal-typing/
 //
-interface Flavouring<FlavourT> {
-    _type?: FlavourT;
-}
-
-export type Flavoured<T, FlavourT> = T & Flavouring<FlavourT>;
+export type Flavoured<T, FlavourT extends string> = T & { _type?: FlavourT };
 
 export type AnyFlavoured = Flavoured<any, any>;

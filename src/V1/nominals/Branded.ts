@@ -35,10 +35,10 @@
 /**
  *
  */
-interface Branding<BrandingT> {
-    _type: BrandingT;
+interface Branding<BrandingT extends string> {
+    BrandingT: BrandingT;
 }
 
-export type Branded<T, BrandingT> = T & Branding<BrandingT>;
+export type Branded<T, BrandingT extends string> = T & Branding<BrandingT>;
 
 export type AnyBranded = Branded<any, any>;
