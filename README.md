@@ -8,6 +8,7 @@ This TypeScript library will help you create _value objects_ and _refined types_
 - [Quick Start](#quick-start)
 - [General Concepts](#general-concepts)
   - [An Example: UUIDs](#an-example-uuids)
+- [Which Approach Is Best?](#which-approach-is-best)
 - [Foundation Types](#foundation-types)
   - [Type Guard](#type-guard)
   - [Data Guard](#data-guard)
@@ -118,7 +119,20 @@ doSomething("123e4567-e89b-12d3-a456-426655440000");
 
 Each approach has pros and cons, and we'll cover those below.
 
-Whichever approach you decide suits you the best, this library makes it easy to adopt.
+## Which Approach Is Best?
+
+Use _value objects_ when:
+
+* you are mixing TypeScript and JavaScript in the same code base
+* if you want to keep everything as simple as possible
+* you are wrapping objects / interfaces
+
+Use _refined types_ when:
+
+* your app is written entirely in TypeScript
+* you're comfortable dealing with a mix of value objects and refined types
+
+Note that _refined types_ only work for strings and numbers. For everything else, you have to use _value objects_ anyway.
 
 ## Foundation Types
 
