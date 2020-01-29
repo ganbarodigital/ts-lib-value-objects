@@ -145,7 +145,7 @@ A _type guard_ is a function that tells the TypeScript compiler to treat a value
 ```typescript
 import { TypeGuard } from "@ganbarodigital/ts-lib-value-objects/V1";
 
-const isUuidType: TypeGuard<Uuid> = (input: unknown) => input is Uuid {
+const isUuidType: TypeGuard<Uuid> = (input: unknown): input is Uuid => {
     if (input instanceof Uuid) {
         return true;
     }
@@ -166,7 +166,7 @@ if (isUuidType(input)) {
 
 Notes:
 
-* we recommend ending your type guards with the word `Type`, to tell them apart from _data guards_. For example, `isUuidType()` instead of `isUuid()`.
+* we recommend ending your type guards with the word `Type`, to tell them apart from _data guards_. For example, `isUuidType()` instead of `isUuid()`. That creates space for a `isUuidData()` function later on.
 
 We've added the `TypeGuard` type for completeness. It's handy if you're passing a type guard as a parameter into another function / method.
 
@@ -179,12 +179,10 @@ Data guards are an example of a _contract_ or _specification_, depending on what
 ```typescript
 import { DataGuard } from "@ganbarodigital/ts-lib-value-objects/V1";
 
-const isUuidData: DataGuard<string> = (input: string): boolean {
-    if (input.length === 36) {
-        return true;
-    }
+const UuidRegex = new RegExp("^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$", "i");
 
-    return false;
+const isUuidData: DataGuard<string> = (input: string): boolean => {
+    return UuidRegex.test(input);
 }
 ```
 
