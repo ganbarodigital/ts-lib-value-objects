@@ -32,7 +32,6 @@
 // POSSIBILITY OF SUCH DAMAGE.
 //
 
-export * from "./coercion";
 export * from "./refinement";
 export * from "./nominals";
 export * from "./types";
