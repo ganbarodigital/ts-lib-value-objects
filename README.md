@@ -17,8 +17,8 @@ This TypeScript library will help you create _value objects_ and _refined types_
 - [Value Objects](#value-objects)
   - [What Is A Value Object?](#what-is-a-value-object)
   - [How To Build Value Objects](#how-to-build-value-objects)
-  - [`Value.isValue()`](#valueisvalue)
-  - [`Value.valueOf()`](#valuevalueof)
+  - [Value.isValue()](#valueisvalue)
+  - [Value.valueOf()](#valuevalueof)
   - [Advantages Of Value Objects](#advantages-of-value-objects)
   - [Disadvantages Of Value Objects](#disadvantages-of-value-objects)
 - [Refined Types](#refined-types)
@@ -27,6 +27,7 @@ This TypeScript library will help you create _value objects_ and _refined types_
   - [How To Build A Refined Type](#how-to-build-a-refined-type)
   - [Type Branding](#type-branding)
   - [Type Flavouring](#type-flavouring)
+  - [Gotchas For Branded Types And Flavoured Types](#gotchas-for-branded-types-and-flavoured-types)
   - [`makeRefinedTypeFactory()`](#makerefinedtypefactory)
   - [Advantages Of Refined Types](#advantages-of-refined-types)
   - [Disadvantages Of Refined Types](#disadvantages-of-refined-types)
@@ -131,6 +132,7 @@ Use _refined types_ when:
 
 * your app is written entirely in TypeScript
 * you're comfortable dealing with a mix of value objects and refined types
+* you're comfortable with the [gotchas of refined types](#gotchas-for-branded-types-and-flavoured-types)
 
 Note that _refined types_ only work for strings and numbers. For everything else, you have to use _value objects_ anyway.
 
@@ -306,7 +308,7 @@ let uuid = Uuid.from("123e4567-e89b-12d3-a456-426655440000");
 
 ```typescript
 import { OnError } from "@ganbarodigital/ts-on-error";
-import { Branded, makeTypeRefinementFactory } from "@ganbarodigital/ts-lib-value-objects";
+import { Branded, makeRefinedTypeFactory } from "@ganbarodigital/ts-lib-value-objects";
 
 // this is an example of "type refinement", using a "branded" string
 type Uuid = Branded<string, "uuid">;
@@ -316,7 +318,7 @@ type Uuid = Branded<string, "uuid">;
 type UuidBuilder = (input: string, onError?: OnError) => Uuid;
 
 // uuidFrom() is a 'smart constructor'
-const uuidFrom: UuidBuilder = makeTypeRefinementFactory(
+const uuidFrom: UuidBuilder = makeRefinedTypeFactory(
     mustBeUuidData,
     defaultUuidErrorHandler,
 );
@@ -491,7 +493,7 @@ export function isUuidData(input: string): boolean {
 }
 ```
 
-Define a _data guarantee_:
+Define a _data guarantee_ that uses your _data guard(s)_:
 
 ```typescript
 import { OnError } from "@ganbarodigital/ts-on-error/V1";
@@ -518,7 +520,10 @@ import { Value } from "@ganbarodigital/ts-lib-value-objects/V1";
 
 class Uuid extends Value<string> {
     public static from(input: string, onError: OnError): Uuid {
+        // enforce the contract / specification!
         mustBeUuidData(input, onError);
+
+        // if we get here, we *know* that `input` is safe to store
         return new Uuid(input);
     }
 }
@@ -541,7 +546,7 @@ function uuidToBytes(uuid: Uuid): Buffer {
 }
 ```
 
-### `Value.isValue()`
+### Value.isValue()
 
 Every value object comes with a `isValue()` method:
 
@@ -556,9 +561,9 @@ class Value {
 }
 ```
 
-Honestly, I can't think of an example where you'd need to call it. It's there if you ever need it!
+Honestly, I can't think of an example of where you'd need to call it. It's there if you ever need it!
 
-### `Value.valueOf()`
+### Value.valueOf()
 
 Every value object comes with a `valueOf()` method:
 
@@ -593,8 +598,11 @@ In no particular order ...
 
 * Value objects have type information at runtime. You can use the Javascript `instanceof` operator in your type-guards to be sure that you're working with the type of object that you expect.
 * Value objects can be extended, to add further behaviours via additional methods (if you prefer an OOP-style of programming).
+* Value objects are safer if your code-base is a mixture of TypeScript and Javascript (e.g., you're gradually converting an older Javascript project over to TypeScript).
 
 ### Disadvantages Of Value Objects
+
+In no particular order ...
 
 * Value objects perform worse than refined types.
 * Value objects take up more RAM at runtime than refined types.
@@ -612,13 +620,13 @@ A _refined type_ is:
 
 We use _refined types_ where we want to restrict (say) the range of numbers that a function can accept.
 
-**The _refined type_ only exists inside the TypeScript compiler**. At runtime, the Javascript interpreter only sees the underlying primitive type. Think of them as TypeScript interfaces, not Javascript classes.
+**The _refined type_ only exists inside the TypeScript compiler**. At runtime, the Javascript interpreter only sees the underlying primitive type. Think of them as being like TypeScript interfaces, not Javascript classes.
 
 ### What Is Type Refinement?
 
 We say that _type refinement_ is the process of turning a more generic type into a stricter type.
 
-For example, all UUIDs are strings, but not all strings are valid UUIDs. In this case, _type refinement_ would be where we take a string as input, and return a `Uuid` type as output.
+For example, all UUIDs are strings, but not all strings are valid UUIDs. In this case, _type refinement_ would be where we take a `string` type as input, and return a `Uuid` type as output.
 
 _Type refinement_ is always done by the _smart constructor_.
 
@@ -650,7 +658,7 @@ import { OnError } from "@ganbarodigital/ts-on-error/V1";
 
 export const InvalidUuidError = Symbol("invalid UUID");
 
-export function mustBeUuid(input: string, onError: OnError): void {
+export function mustBeUuidData(input: string, onError: OnError): void {
     if (isUuidData(input)) {
         return true;
     }
@@ -688,7 +696,7 @@ type UuidFactory = RefinedTypeFactory<string, Uuid, object>;
 
 // this is our smart constructor
 const uuidFrom: UuidFactory = makeRefinedTypeFactory<string, Uuid>(
-    mustBeUuid, throwInvalidUuidError
+    mustBeUuidData, throwInvalidUuidError
 )
 ```
 
@@ -715,26 +723,60 @@ function uuidToBytes(uuid: Uuid): Buffer {
 
 (_Type flavouring_ is a technique first documented by [Atomic Object](https://spin.atomicobject.com/2018/01/15/typescript-flexible-nominal-typing/).)
 
-There's only one difference between _flavoured types_ and _branded types_: you can cast a suitable primitive to a _flavoured type_.
+There's only one difference between _flavoured types_ and _branded types_: you can assign a compatible primitive to a _flavoured type_.
 
 ```typescript
 import { Flavoured } from "@ganbarodigital/ts-lib-value-objects/V1";
 
 type Uuid = Flavoured<string, "uuid">;
 
-const uuid = "123e4567-e89b-12d3-a456-426655440000" as Uuid;
+// here, we tell TypeScript to treat this string
+// as a `Uuid` type
+const uuid: Uuid = "123e4567-e89b-12d3-a456-426655440000";
 ```
 
-This is very handy for numbers that have different _units of measure_; for example, imperial and metric:
+_Flavoured types_ are more convenient when loading data from a database.
+
+### Gotchas For Branded Types And Flavoured Types
+
+_Branded types_ and _flavoured types_ don't give you the same level of type safety as _value objects_, even at compile time.
+
+Unfortunately, **TypeScript won't tell you if you mix these types in an operation:**
 
 ```typescript
-import { Flavoured } from "@ganbarodigital/ts-lib-value-objects/V1";
+import { Branded } from "@ganbarodigital/ts-lib-value-objects/V1";
 
-type inches = Flavoured<number, "feet">;
-type centimetres = Flavoured<number, "metres">;
+type Inches = Branded<number, "inches">;
+type Centimetres = Branded<number, "centimetres">;
 
-const imperialHeight = 68 as inches;
-const metricHeight = 173 as centimetres;
+const a = 9 as Inches;
+const b = 10 as Centimetres;
+
+// this should not compile ... but it does
+const c = a + b;
+```
+
+To use _branded types_ and _flavoured types_ safely, make sure that you wrap any operations in a function:
+
+```typescript
+import { Branded } from "@ganbarodigital/ts-lib-value-objects/V1";
+
+type Inches = Branded<number, "inches">;
+type Centimetres = Branded<number, "centimetres">;
+
+function sum(a: Inches, b: Centimetres): Centimetres {
+    return ((a * 2.54) + b) as Centimetres;
+}
+
+const a = 9 as Inches;
+const b = 10 as Centimetres;
+
+// this will compile
+const c = sum(a, b);
+
+// this will not compile, because the parameters
+// are the wrong way around
+const c = sum(b, a);
 ```
 
 ### `makeRefinedTypeFactory()`
@@ -790,6 +832,10 @@ See the [Type Branding](#type-branding) example code above to see it in action.
     The only runtime performance cost is the data checking work done inside the smart constructor. That can still add up, if you're processing hundreds or thousands of pieces of data in a single operation / API handler.
 
 ### Disadvantages Of Refined Types
+
+* The TypeScript compiler doesn't catch operations that use mixed types (see [gotchas](#gotchas-for-branded-types-and-flavoured-types) above). It only catches assignments involving mixed types.
+
+    **This is a big disadvantage.** It puts the effort of type checking back onto the programmer. You can mitigate it with a disciplined approach (wrap all operations in their own functions), but beware: any approach that requires the developer to do the right thing 100% of the time always leads to bugs being shipped to production. Even experienced developers will make mistakes.
 
 * No runtime type checking.
 
