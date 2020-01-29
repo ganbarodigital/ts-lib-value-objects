@@ -1,5 +1,5 @@
 {
-    "name": "@ganbarodigital/ts-lib-value-objects/V1",
+    "name": "@ganbarodigital/value-objects/V1",
     "typings": "../lib/V1/index.d.ts",
     "main": "../lib/V1/index.js",
     "sideEffects": false
