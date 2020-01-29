@@ -33,7 +33,7 @@
 //
 import { OnError } from "@ganbarodigital/ts-on-error/V1";
 
-import { DataGuarantee } from "../types";
+import { DataGuarantee, Value } from "../types";
 
 /**
  * RefinedType is a base class for defining a subset of any given type.
@@ -45,12 +45,9 @@ import { DataGuarantee } from "../types";
  * JavaScript auto-resolve to the wrapped primitive in some circumstances.
  *
  * `T` is the type to be wrapped.
- * `EX` is the type of error data passed to the OnError handler
+ * `EX` is the type of extra data passed to the OnError handler
  */
-export class RefinedType<T, EX = object> {
-    // this is the value that has been wrapped
-    protected value: T;
-
+export class RefinedType<T, EX = object> extends Value<T> {
     /**
      * define your own public constructor (or a static `from()` method if
      * you prefer that style, or want to support overloading)
@@ -83,16 +80,6 @@ export class RefinedType<T, EX = object> {
         mustBe(input, onError);
 
         // we're good to go
-        this.value = input;
-    }
-
-    /**
-     * returns the wrapped value
-     *
-     * for types passed by reference, we do NOT return a clone of any kind.
-     * You have to be careful not to accidentally change this value.
-     */
-    public valueOf(): T {
-        return this.value;
+        super(input);
     }
 }

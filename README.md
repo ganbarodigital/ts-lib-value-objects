@@ -29,8 +29,8 @@ This TypeScript library will help you create value objects and type refinements.
   - [`makeRefinedTypeFactory()`](#makerefinedtypefactory)
   - [Advantages Of Refined Types](#advantages-of-refined-types)
   - [Disadvantages Of Refined Types](#disadvantages-of-refined-types)
-- [V1 API](#v1-api)
-  - [CoercedNumber](#coercednumber)
+- [Refined Types As Value Objects](#refined-types-as-value-objects)
+  - [RefinedString and RefinedNumber Classes](#refinedstring-and-refinednumber-classes)
 - [NPM Scripts](#npm-scripts)
   - [npm run clean](#npm-run-clean)
   - [npm run build](#npm-run-build)
@@ -613,39 +613,61 @@ See the [Type Branding](#type-branding) example code above to see it in action.
 
     Is it a problem in practice? It shouldn't be. It does take some getting used to, though.
 
-## V1 API
+## Refined Types As Value Objects
 
-### CoercedNumber
+If you want to create refined types that are still full-blown [value objects](#value-objects), we've got support for that too.
 
-```typescript
-/**
- * CoercedNumber is a base class for defining a subset of numbers.
- * The subset is defined by a contract / specification, and enforced
- * by a DataCoercion.
- *
- * The DataCoercion and OnError handler are passed into the base class's
- * constructor().
- *
- * DataCoercion gives you the option of transforming an invalid input into
- * one that is valid. For example, you could write a function that would
- * strip spaces or dashes from a credit card number.
- *
- * `EX` is the DataCoercion's onError EX type
- * `ER` is the return type from the DataCoercion's onError handler
- */
-export class CoercedNumber<EX, ER extends number> extends CoercedPrimitive<number, EX, ER>;
-```
+### RefinedString and RefinedNumber Classes
 
-Example:
+`RefinedString` and `RefinedNumber` are two classes we export for you. They're identical, except that one is for wrapping a `string`, and the other is for wrapping a `number`.
+
+Both classes extend the [Value](#value-objects) class documented earlier. They also add some additional methods to help Javascript auto-convert to a primitive in some circumstances (for example, writing to the `console.log()`).
+
+Here's an example of how to create a `Uuid` value object type, using the `RefinedString` class.
 
 ```typescript
-
+import { RefinedString } from "@ganbarodigital/ts-lib-value-objects/V1";
 import { OnError } from "@ganbarodigital/ts-on-error/V1";
-import { CoercedNumber, DataCoercion } from "@ganbarodigital/ts-lib-value-objects/V1";
 
+const UuidRegex = new RegExp("^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$", "i");
 
+// it is good practice to define a standalone data guard
+export function isUuidData(input: string): boolean {
+    return UuidRegex.test(input);
+}
 
+export const InvalidUuidError = Symbol("invalid UUID");
+
+// it is good practice to define a standalone data guarantee
+export function mustBeUuid(input: string, onError: OnError): void {
+    if (isUuidData(input)) {
+        return true;
+    }
+
+    return onError(InvalidUuidError, "input is not a valid UUID", { input: input });
+}
+
+// it is good practice to define a default onError handler
+export function throwInvalidUuidError(reason: symbol, description: string, extra: object): never {
+    throw new Error(description);
+}
+
+class Uuid extends RefinedString {
+    public static from(input: string, onError?: OnError): Uuid {
+        // make sure we have an onError handler
+        onError = onError ?? throwInvalidUuidError;
+
+        // the parent constructor will handle everything for us
+        super(input, mustBeUuid, throwInvalidUuidError);
+    }
+}
 ```
+
+Notes:
+
+* At the time of writing (TypeScript v3.7.x), TypeScript doesn't understand / support auto-conversion of objects to numbers, even though it is valid JavaScript. See [TypeScript issue 2031](https://github.com/microsoft/TypeScript/issues/2031) for where the bug was introduced, [TypeScript issue 4538](https://github.com/microsoft/TypeScript/issues/4538) for the main bug report, and [TypeScript issue 2361](https://github.com/microsoft/TypeScript/issues/2361) for where (we hope) work on the fix is being tracked.
+
+    Until this TypeScript bug is fixed, you're probably better off using a [refined type](#refined-types) for numbers, instead of value objects.
 
 ## NPM Scripts
 

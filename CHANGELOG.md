@@ -34,6 +34,10 @@ The following changes have been completed, and will be included in the next tagg
 * Added `Branded` type
 * Added `RefinedTypeFactory` function
 * Added `makeRefinedTypeFactory` function
+* Added `RefinedType` class
+* Added `RefinedPrimitive` class
+* Added `RefinedNumber` class
+* Added `RefinedString` class
 
 ### Fixes
 

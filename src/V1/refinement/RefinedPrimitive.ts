@@ -38,9 +38,9 @@ import { RefinedType } from "./RefinedType";
  * type (e.g. a string). The subset is defined by a contract / specification,
  * and enforced by a DataGuarantee.
  *
- * `P` is the type of primitive to be refined
- * `EX` is the DataGuarantee's onError EX type
+ * `T` is the type to be wrapped.
+ * `EX` is the type of extra data passed to the OnError handler
  */
-export abstract class RefinedPrimitive<P, EX> extends RefinedType<P, EX> {
+export abstract class RefinedPrimitive<T, EX = object> extends RefinedType<T, EX> {
     public abstract [Symbol.toPrimitive](hint: string): string|number|boolean|null;
 }
