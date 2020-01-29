@@ -17,7 +17,19 @@
   "contributors": [
     "Stuart Herbert <stuherbert@ganbarodigital.com> (https://ganbarodigital.com)"
   ],
-  "keywords": [],
+  "keywords": [
+    "typescript",
+    "value objects",
+    "type refinement",
+    "refined types",
+    "branded types",
+    "flavoured types",
+    "programming by contract",
+    "defensive programming",
+    "robustness",
+    "correctness",
+    "functional programming"
+  ],
   "files": [
     "lib/**/*",
     "CHANGELOG.md",
