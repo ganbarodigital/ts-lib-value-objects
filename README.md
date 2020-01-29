@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This TypeScript library will help you create value objects and type refinements. They will help you write safer software.
+This TypeScript library will help you create _value objects_ and _refined types_. They will help you write safer software that also performs better.
 
 - [Introduction](#introduction)
 - [Quick Start](#quick-start)
@@ -53,12 +53,15 @@ __VS Code users:__ once you've added a single import anywhere in your project, y
 
 ## General Concepts
 
-The basic idea behind _value objects_ and _type refinements_ is to use TypeScript's type system to reduce the amount of runtime checks we need.
+The basic idea behind _value objects_ and _refined types_ is to use TypeScript's type system to reduce the amount of runtime checks we need.
 
 How do we do this?
 
-* We take all of the `isXXX()` kind of checks that are scattered around our code, and put them into constructors / type factories instead.
+* We define new types that can only contain valid values.
+* We take all of the `isXXX()` kind of checks that are scattered around our code, and put them into _smart constructors_ for these new types.
 * That way, the checks run once (when we create the value), and don't have to run again when we pass the value into functions and methods (because TypeScript knows the value is safe).
+
+Or, to put it another way, we consolidate most of our defensive programming checks into _smart constructors_, and we write our business logic to always work for our new types.
 
 ### An Example: UUIDs
 
@@ -66,10 +69,12 @@ For example, a universally-unique ID (or UUID for short) is a string that contai
 
 We can say that "all UUIDs are strings", but we cannot say that "all strings are UUIDs". What do we mean?
 
-* We can use a `UUID`'s value as a parameter to any function or method that expects a `string`, and that function / method will work as expected.
-* But if we pass any old string into a function / method that expects a `UUID`, the function / method won't work as expected.
+* We can use a UUID's value as a parameter to any function or method that expects a `string`, and that function / method will work as expected.
+* But if we pass any old string into a function / method that expects a UUID, the function / method probably won't work as expected.
 
-In pure JavaScript (and many other weakly-typed languages!), each function / method would have to call an `isUUID(input)` function first, just to protect itself from a bad input. A call to `isUUID()` is a _runtime check_: it happens every time the function / method calls. There's a performance cost to runtime checks, and that cost adds up very quickly.
+In pure JavaScript (and many other weakly-typed languages!), each function / method would have to call an `isUUID(input)` function first, just to protect itself from a bad input. This is _robustness check_, and an example of _defensive programming_.
+
+A call to `isUUID()` is a _runtime check_: it happens every time the function / method calls. There's a performance cost to runtime checks, and that cost adds up very quickly.
 
 We want to use TypeScript to make all of that go away. And there's two ways to do that:
 
