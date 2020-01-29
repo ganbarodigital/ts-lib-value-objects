@@ -21,7 +21,9 @@ For each release, changes are grouped under these headings:
 
 The following changes have been completed, and will be included in the next tagged release.
 
-### Backwards-Compatibility Breaks
+## v1.0.0
+
+Released Wednesday, 29th January 2020.
 
 ### New
 
@@ -38,23 +40,3 @@ The following changes have been completed, and will be included in the next tagg
 * Added `RefinedPrimitive` class
 * Added `RefinedNumber` class
 * Added `RefinedString` class
-
-### Fixes
-
-### Dependencies
-
-### Tools
-
-## v0.0.1
-
-Released Monday, 1st January 2020.
-
-### Backwards-Compatibility Breaks
-
-### New
-
-### Fixes
-
-### Dependencies
-
-### Tools
