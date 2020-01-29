@@ -34,14 +34,14 @@
 import { OnError } from "@ganbarodigital/ts-on-error/lib/V1";
 
 /**
- * A DataGuarantee inspects the given data, to see if the given data
+ * A DataCoercion inspects the given data, to see if the given data
  * meets a defined contract / specification.
  *
  * If the given data does meet the given contract / specification, the
- * DataGuarantee returns the given data.
+ * DataCoercion returns the given data.
  *
  * If the given data does not meet the given contract / specification,
- * the DataGuarantee calls the supplied OnError handler. The OnError
+ * the DataCoercion calls the supplied OnError handler. The OnError
  * handler can do any of the following:
  *
  * a) it can throw an Error (ie it never returns), or
@@ -53,8 +53,8 @@ import { OnError } from "@ganbarodigital/ts-on-error/lib/V1";
  * - it *must* be compatible with `T` in some way
  * `EX` is the type of information passed to the OnError handler
  *
- * When you implement a DataGuarantee, make it a wrapper around one or more
- * TypeGuards and/or DataGuards - and even other DataGuarantees if
+ * When you implement a DataCoercion, make it a wrapper around one or more
+ * TypeGuards and/or DataGuards - and even other DataCoercions if
  * appropriate. That's the best way to make your code as reusable as possible.
  */
 export type DataCoercion<T, GR extends T, EX = object>

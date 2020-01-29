@@ -330,6 +330,35 @@ let uuid = uuidFrom("123e4567-e89b-12d3-a456-426655440000");
 
 ### Data Coercion
 
+```typescript
+/**
+ * A DataCoercion inspects the given data, to see if the given data
+ * meets a defined contract / specification.
+ *
+ * If the given data does meet the given contract / specification, the
+ * DataCoercion returns the given data.
+ *
+ * If the given data does not meet the given contract / specification,
+ * the DataCoercion calls the supplied OnError handler. The OnError
+ * handler can do any of the following:
+ *
+ * a) it can throw an Error (ie it never returns), or
+ * b) it can return a value that does meet the given contract / specification
+ *
+ * `T` is the type of data to be inspected
+ * - `T` is also the return type of the supplied `OnError` handler
+ * `GR` is the return type of the data guarantee function
+ * - it *must* be compatible with `T` in some way
+ * `EX` is the type of information passed to the OnError handler
+ *
+ * When you implement a DataCoercion, make it a wrapper around one or more
+ * TypeGuards and/or DataGuards - and even other DataCoercions if
+ * appropriate. That's the best way to make your code as reusable as possible.
+ */
+export type DataCoercion<T, GR extends T, EX = object>
+  = (input: T, onError: OnError<EX, T>) => GR;
+```
+
 A _data coercion_ is a function. It enforces a _contract_ or _specification_. It inspects the given input, and if the input doesn't meet the contract / specification, it calls the supplied `OnError` handler. (So far, that's exactly the same as a _data guarantee_.)
 
 The `OnError` handler can do one of two things:
@@ -343,7 +372,7 @@ import { DataCoercion } from "@ganbarodigital/ts-lib-value-objects/V1";
 
 const invalidUuid = Symbol("invalidUuid");
 
-const mustBeUuid: DataCoercion<string> = (input: string, onError: OnError): string => {
+const mustBeUuidData: DataCoercion<string> = (input: string, onError: OnError): string => {
     // does `input` contain a well-formatted UUID?
     // if it doesn't, our onError handler has the opportunity to return
     // something that is correct
@@ -371,6 +400,85 @@ A _value object_ is:
 * that is immutable
 * that allows you to get the stored value
 
+```typescript
+/**
+ * ValueObject<T> describes the behaviour of data that does have a value.
+ *
+ * It is useful for ensuring all value objects have a *minimal* set
+ * of common behaviour, whether or not they share a common base class.
+ */
+export interface ValueObject<T> {
+    /**
+     * a type-guard.
+     *
+     * added mostly for completeness
+     */
+    isValue(): this is Value<T>;
+
+    /**
+     * returns the wrapped value
+     *
+     * for types passed by reference, we do NOT return a clone of any kind.
+     * You have to be careful not to accidentally change this value.
+     */
+    valueOf(): T;
+}
+
+/**
+ * Value<T> is the base class for defining your Value Object hierarchies.
+ *
+ * Every Value Object:
+ *
+ * - has a stored value
+ * - that you can get the valueOf()
+ *
+ * We've deliberately kept this as minimal as possible. We're looking to
+ * support idiomatic TypeScript code, rather than functional programming.
+ *
+ * If you do want fully-functional programming, use one of the many
+ * excellent libraries that are out there instead.
+ */
+export class Value<T> implements ValueObject<T> {
+    /**
+     * this is the data that we wrap
+     *
+     * child classes are welcome to access it directly (to avoid the cost
+     * of a call to `valueOf()`), but should never modify the data at all
+     */
+    protected readonly value: T;
+
+    /**
+     * this constructor does no contract / specification enforcement at all
+     * do that in your constructor, before calling super()
+     *
+     * if you don't need to enforce a contract, your class can safely
+     * create a public constructor
+     */
+    protected constructor(input: T) {
+        this.value = input;
+    }
+
+    /**
+     * returns the wrapped value
+     *
+     * for types passed by reference, we do NOT return a clone of any kind.
+     * You have to be careful not to accidentally change this value.
+     */
+    public valueOf(): T {
+        return this.value;
+    }
+
+    /**
+     * a type-guard. It proves that an object is a wrapper around type `T`.
+     *
+     * added mostly for completeness
+     */
+    public isValue(): this is Value<T> {
+        return true;
+    }
+}
+```
+
 ### How To Build Value Objects
 
 Define one (or more!) _data guards_:
@@ -390,7 +498,7 @@ import { OnError } from "@ganbarodigital/ts-on-error/V1";
 
 export const InvalidUuidError = Symbol("invalid UUID");
 
-export function mustBeUuid(input: string, onError: OnError): void {
+export function mustBeUuidData(input: string, onError: OnError): void {
     if (isUuidData(input)) {
         return true;
     }
@@ -410,7 +518,7 @@ import { Value } from "@ganbarodigital/ts-lib-value-objects/V1";
 
 class Uuid extends Value<string> {
     public static from(input: string, onError: OnError): Uuid {
-        mustBeUuid(input, onError);
+        mustBeUuidData(input, onError);
         return new Uuid(input);
     }
 }
