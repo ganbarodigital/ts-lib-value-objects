@@ -166,9 +166,9 @@ if (isUuidType(input)) {
 
 Notes:
 
-* we recommend ending your type guards with the word `Type`, to tell them apart from _data guards_.
+* we recommend ending your type guards with the word `Type`, to tell them apart from _data guards_. For example, `isUuidType()` instead of `isUuid()`.
 
-We've added the `TypeGuard` type for completeness. It's handy if you've got a factory that needs a type guard as an input parameter.
+We've added the `TypeGuard` type for completeness. It's handy if you're passing a type guard as a parameter into another function / method.
 
 ### Data Guard
 
