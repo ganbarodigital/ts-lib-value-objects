@@ -28,7 +28,7 @@ This TypeScript library will help you create _value objects_ and _refined types_
   - [Type Branding](#type-branding)
   - [Type Flavouring](#type-flavouring)
   - [Gotchas For Branded Types And Flavoured Types](#gotchas-for-branded-types-and-flavoured-types)
-  - [`makeRefinedTypeFactory()`](#makerefinedtypefactory)
+  - [makeRefinedTypeFactory()](#makerefinedtypefactory)
   - [Advantages Of Refined Types](#advantages-of-refined-types)
   - [Disadvantages Of Refined Types](#disadvantages-of-refined-types)
 - [Refined Types As Value Objects](#refined-types-as-value-objects)
@@ -779,7 +779,7 @@ const c = sum(a, b);
 const c = sum(b, a);
 ```
 
-### `makeRefinedTypeFactory()`
+### makeRefinedTypeFactory()
 
 `makeRefinedTypeFactory()` builds your _smart constructor_ for you.
 
@@ -827,7 +827,7 @@ See the [Type Branding](#type-branding) example code above to see it in action.
 
 * There's almost no runtime performance penalty.
 
-    The TypeScript compiler removes the branding / flavouring from the final compiled JavaScript, leaving only the original type behind. For example, when your code runs, a branded string is just a string.
+    The TypeScript compiler removes the branding / flavouring from the final compiled JavaScript, leaving only the original type behind. For example, when your code runs, a branded string is just a string. But you're only having to do those checks once per value (in the smart constructor) instead of inside every function / method as part of your _defensive programming_.
 
     The only runtime performance cost is the data checking work done inside the smart constructor. That can still add up, if you're processing hundreds or thousands of pieces of data in a single operation / API handler.
 
