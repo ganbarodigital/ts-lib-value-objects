@@ -53,15 +53,18 @@ __VS Code users:__ once you've added a single import anywhere in your project, y
 
 ## General Concepts
 
-The basic idea behind _value objects_ and _refined types_ is to use TypeScript's type system to reduce the amount of runtime checks we need.
+The basic idea behind _value objects_ and _refined types_ is to use TypeScript's type system to reduce the amount of runtime checks we need (improve _robustness_) **and** reduce the amount of logic defects in our code (improve _correctness_).
 
 How do we do this?
 
 * We define new types that can only contain valid values.
 * We take all of the `isXXX()` kind of checks that are scattered around our code, and put them into _smart constructors_ for these new types.
 * That way, the checks run once (when we create the value), and don't have to run again when we pass the value into functions and methods (because TypeScript knows the value is safe).
+* Our functions and methods can then be made simplier, because they know they're receiving a value that is always valid. In many cases, functions and methods can be made to work 100% of the time.
 
 Or, to put it another way, we consolidate most of our defensive programming checks into _smart constructors_, and we write our business logic to always work for our new types.
+
+**None of this removes the need to write good unit tests.** You'll end up writing less code, with less complexity. This will reduce the number of branches in your code. Less branches means less test cases to cover with your unit tests. You still need to write unit tests for every branch of code that remains.
 
 ### An Example: UUIDs
 
