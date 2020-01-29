@@ -227,9 +227,32 @@ Notes:
 
 ### Data Guarantee
 
-A _data guarantee_ is a function. It enforces a _contract_ or _specification_. It inspects the given input, and if the input doesn't meet the contract / specification, it calls the supplied `OnError` handler.
+```typescript
+/**
+ * A DataGuarantee inspects the given data, to see if the given data
+ * meets a defined contract / specification.
+ *
+ * If the given data does meet the given contract / specification, the
+ * DataGuarantee returns the given data.
+ *
+ * If the given data does not meet the given contract / specification,
+ * the DataGuarantee calls the supplied OnError handler. The OnError
+ * handler must throw an Error of some kind.
+ *
+ * `T` is the type of data to be inspected
+ * `EX` is the type of information passed to the OnError handler
+ *
+ * When you implement a DataGuarantee, make it a wrapper around one or more
+ * TypeGuards and/or DataGuards - and even other DataGuarantees if
+ * appropriate. That's the best way to make your code as reusable as possible.
+ */
+export type DataGuarantee<T, EX = object>
+  = (input: T, onError: OnError<EX, never>) => void;
+```
 
-The `OnError` handler decides which `Error` to throw. The `OnError` handler _always_ throws an `Error` of some kind.
+A _data guarantee_ is a function. It enforces a _contract_ or _specification_. It calls one or more _data guards_ to inspect the given input, and if the input doesn't meet the contract / specification, it calls the supplied `OnError` handler.
+
+The `OnError` handler decides which `Error` to throw. If it is called, the `OnError` handler _always_ throws an `Error` of some kind.
 
 ```typescript
 import { OnError } from "@ganbarodigital/ts-on-error/V1";
@@ -237,7 +260,7 @@ import { DataGuarantee } from "@ganbarodigital/ts-lib-value-objects/V1";
 
 const invalidUuid = Symbol("invalidUuid");
 
-const mustBeUuid: DataGuarantee<string> = (input: string, onError: OnError): void => {
+const mustBeUuidData: DataGuarantee<string> = (input: string, onError: OnError): void => {
     // does the string contain a well-formatted UUID?
     if (!isUuidData(input)) {
         onError(invalidUuid, "input is not a well-formatted UUID", {input: input});
@@ -249,33 +272,30 @@ const mustBeUuid: DataGuarantee<string> = (input: string, onError: OnError): voi
 
 There's a lot going on here. Let's break it down:
 
-* each error gets its own unique identifier. We're creating `symbol`s for those. They help the `OnError` handler cope with different types of errors.
-* the `OnError` handler is a callback that you provide
-  - its job is to decide what to do about the reported error
-* the `OnError` handler takes three parameters:
-  - a unique ID for the error
-  - a description of the error
-  - extra information about the error
-* `DataGuarantee` is a generic type. By default, it expects the function's input to be `unknown`, and it expects the function to send an `object` as the final parameter to the `OnError` handler
-  - you can change these to suit, e.g. `DataGuarantee<string, InvalidUuid>`
+* `mustBeUuidData()` is a _data guarantee_. It takes an input string to inspect, and an `onError` handler to call if the inspection fails.
+* It reuses the existing _data guard_ `isUuidData()`. It doesn't define its own checks.
+* If the `isUuidData()` check fails, `mustBeUuidData()` doesn't have its own hard-coded error that it throws. Instead, it calls the `OnError` handler (that you provide), so that you can decide what to do and what error to throw.
 
 Data guarantees get used in so-called _smart constructors_:
 
 ```typescript
 import { OnError } from "@ganbarodigital/ts-on-error";
-import { RefinedString } from "@ganbarodigital/ts-lib-value-objects";
+import { Value } from "@ganbarodigital/ts-lib-value-objects";
 
 // this is the value object approach
-class Uuid extends RefinedString {
+class Uuid extends Value {
     // `from()` is our smart constructor
     public static from(input: string, onError?: OnError): Uuid {
         // make sure we have an error handler
         onError = onError ?? defaultUuidErrorHandler;
 
+        // enforce the data guarantee
+        mustBeUuidData(input, onError);
+
         // we tell our parent class' constructor which
         // data guarantee and error handler to use, and
         // it takes care of all the necessary calls
-        return new Uuid(input, mustBeUuid, onError);
+        return new Uuid(input);
     }
 }
 
@@ -297,7 +317,7 @@ type UuidBuilder = (input: string, onError?: OnError) => Uuid;
 
 // uuidFrom() is a 'smart constructor'
 const uuidFrom: UuidBuilder = makeTypeRefinementFactory(
-    mustBeUuid,
+    mustBeUuidData,
     defaultUuidErrorHandler,
 );
 
@@ -323,7 +343,7 @@ import { DataCoercion } from "@ganbarodigital/ts-lib-value-objects/V1";
 
 const invalidUuid = Symbol("invalidUuid");
 
-const mustBeUuid: DataCoercion<string> = (input: string, onError: OnError): string {
+const mustBeUuid: DataCoercion<string> = (input: string, onError: OnError): string => {
     // does `input` contain a well-formatted UUID?
     // if it doesn't, our onError handler has the opportunity to return
     // something that is correct
