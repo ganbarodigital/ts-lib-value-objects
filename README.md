@@ -140,6 +140,21 @@ Both _value objects_ and _refined types_ rely on a group of underlying, foundati
 
 ### Type Guard
 
+```typescript
+/**
+ * A TypeGuard inspects a piece of data to see if the data is the given
+ * type.
+ *
+ * If the given data is the given type, the function returns `true`.
+ * It returns `false` otherwise.
+ *
+ * TypeGuards are a form of runtime robustness check. They're used to
+ * make sure that the given input is the type you think it is, before you
+ * try and use that input. They help prevent runtime errors.
+ */
+export type TypeGuard<T> = (input: unknown) => input is T;
+```
+
 A _type guard_ is a function that tells the TypeScript compiler to treat a value as a given type.
 
 ```typescript
@@ -172,6 +187,25 @@ We've added the `TypeGuard` type for completeness. It's handy if you're passing 
 
 ### Data Guard
 
+```typescript
+/**
+ * A DataGuard inspects a piece of data to see if the data meets a
+ * given contract / specification.
+ *
+ * If the given data does meet the contract, the function returns `true`.
+ * It returns `false` otherwise.
+ *
+ * DataGuards work best when they check for one thing, for something that
+ * can't meaningfully be broken down into multiple things.
+ *
+ * That makes them very reusable, and it allows you to build up rich
+ * error reporting in your code.
+ *
+ * `T` is the type of data to be inspected.
+ */
+export type DataGuard<T> = (input: T) => boolean;
+```
+
 A _data guard_ is a function. It inspects the given data, and returns `true` if the data matches its internal rule(s). It returns `false` otherwise.
 
 Data guards are an example of a _contract_ or _specification_, depending on what programming paradigm you subscribe to :)
@@ -203,7 +237,7 @@ import { DataGuarantee } from "@ganbarodigital/ts-lib-value-objects/V1";
 
 const invalidUuid = Symbol("invalidUuid");
 
-const mustBeUuid: DataGuarantee<string> = (input: string, onError: OnError): void {
+const mustBeUuid: DataGuarantee<string> = (input: string, onError: OnError): void => {
     // does the string contain a well-formatted UUID?
     if (!isUuidData(input)) {
         onError(invalidUuid, "input is not a well-formatted UUID", {input: input});
