@@ -1,7 +1,7 @@
 {
   "name": "@ganbarodigital/ts-lib-value-objects",
-  "version": "0.0.1",
-  "description": "Helps you create value objects and type refinements for safer software",
+  "version": "1.0.0",
+  "description": "Helps you create value objects and refined types for safer software",
   "repository": "github:ganbarodigital/ts-lib-value-objects",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -18,6 +18,17 @@
     "Stuart Herbert <stuherbert@ganbarodigital.com> (https://ganbarodigital.com)"
   ],
   "keywords": [
+    "typescript",
+    "value objects",
+    "type refinement",
+    "refined types",
+    "branded types",
+    "flavoured types",
+    "programming by contract",
+    "defensive programming",
+    "robustness",
+    "correctness",
+    "functional programming"
   ],
   "files": [
     "lib/**/*",
@@ -27,6 +38,7 @@
   ],
   "license": "BSD-3-Clause",
   "dependencies": {
+    "@ganbarodigital/ts-on-error": "0.0.2",
     "@types/node": "^13.1.2",
     "tslint": "^5.20.1",
     "typescript": "^3.7.4"
