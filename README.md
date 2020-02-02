@@ -415,7 +415,7 @@ export interface ValueObject<T> {
      *
      * added mostly for completeness
      */
-    isValue(): this is Value<T>;
+    isValue(): this is ValueObject<T>;
 
     /**
      * returns the wrapped value
@@ -475,7 +475,7 @@ export class Value<T> implements ValueObject<T> {
      *
      * added mostly for completeness
      */
-    public isValue(): this is Value<T> {
+    public isValue(): this is ValueObject<T> {
         return true;
     }
 }
@@ -557,7 +557,7 @@ class Value {
      *
      * added mostly for completeness
      */
-    isValue(): this is Value<T>;
+    isValue(): this is ValueObject<T>;
 }
 ```
 
