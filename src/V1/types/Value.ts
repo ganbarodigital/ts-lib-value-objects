@@ -44,7 +44,7 @@ export interface ValueObject<T> {
      *
      * added mostly for completeness
      */
-    isValue(): this is Value<T>;
+    isValue(): this is ValueObject<T>;
 
     /**
      * returns the wrapped value

@@ -21,6 +21,14 @@ For each release, changes are grouped under these headings:
 
 The following changes have been completed, and will be included in the next tagged release.
 
+## v1.0.1
+
+Released Sunday, 2nd February 2020.
+
+### Fixes
+
+* `ValueObject.isValue()` now returns `this is ValueObject<T>`, to help with creating value objects that wrap structs.
+
 ## v1.0.0
 
 Released Wednesday, 29th January 2020.
