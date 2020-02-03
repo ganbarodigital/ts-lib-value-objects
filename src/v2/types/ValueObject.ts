@@ -31,29 +31,58 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
+import { Value } from "./Value";
 
 /**
- * Value<T> describes the behaviour of data that does have a value,
- * but does not have an identity (a primary key).
+ * ValueObject<T> is the base class for defining your Value Object
+ * hierarchies.
  *
- * It is useful for ensuring all value objects have a *minimal* set
- * of common behaviour, whether or not they share a common base class.
+ * Every Value Object:
  *
- * Use Entity<ID,T> for data that does have an identity.
+ * - has a stored value
+ * - that you can get the valueOf()
+ *
+ * We've deliberately kept this as minimal as possible. We're looking to
+ * support idiomatic TypeScript code, rather than functional programming.
+ *
+ * If you do want fully-functional programming, use one of the many
+ * excellent libraries that are out there instead.
+ *
+ * Use EntityObject<ID,T> for data that has an identity (a primary key).
  */
-export interface Value<T> {
+export class ValueObject<T> implements Value<T> {
     /**
-     * a type-guard.
+     * this is the data that we wrap
      *
-     * added mostly for completeness
+     * child classes are welcome to access it directly (to avoid the cost
+     * of a call to `valueOf()`), but should never modify the data at all
      */
-    isValue(): this is Value<T>;
-
+    protected readonly value: T;
+    /**
+     * this constructor does no contract / specification enforcement at all
+     * do that in your constructor, before calling super()
+     *
+     * if you don't need to enforce a contract, your class can safely
+     * create a public constructor
+     */
+    protected constructor (input: T) {
+        this.value = input;
+    }
     /**
      * returns the wrapped value
      *
      * for types passed by reference, we do NOT return a clone of any kind.
      * You have to be careful not to accidentally change this value.
      */
-    valueOf(): T;
+    public valueOf(): T {
+        return this.value;
+    }
+    /**
+     * a type-guard. It proves that an object is a wrapper around type `T`.
+     *
+     * added mostly for completeness
+     */
+    public isValue(): this is Value<T> {
+        return true;
+    }
 }

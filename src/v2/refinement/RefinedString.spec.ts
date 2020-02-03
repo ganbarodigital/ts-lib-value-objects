@@ -33,7 +33,7 @@
 //
 import { OnError } from "@ganbarodigital/ts-on-error/V1";
 
-import { ValueObject } from "../types/Value";
+import { ValueObject } from "../types/ValueObject";
 import { RefinedString } from "./RefinedString";
 
 function mustBeUuid(input: string): void {

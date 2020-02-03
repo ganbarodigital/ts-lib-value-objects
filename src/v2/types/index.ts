@@ -38,3 +38,4 @@ export * from "./DataGuard";
 export * from "./Entity";
 export * from "./TypeGuard";
 export * from "./Value";
+export * from "./ValueObject";

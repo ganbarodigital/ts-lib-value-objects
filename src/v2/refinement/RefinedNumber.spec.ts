@@ -33,7 +33,7 @@
 //
 import { OnError } from "@ganbarodigital/ts-on-error/V1";
 
-import { ValueObject } from "../types/Value";
+import { ValueObject } from "../types/ValueObject";
 import { RefinedNumber } from "./RefinedNumber";
 
 function mustBeAdultAge(input: number): void {
