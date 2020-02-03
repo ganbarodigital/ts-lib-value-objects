@@ -31,36 +31,60 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
+import { Entity } from "./Entity";
 
 /**
- * Entity<ID, T> describes the behaviour of data that has an identity.
+ * Entity<ID, T> is the base class for defining your Entity hierarchies.
  *
- * It is useful for ensuring all entities have a *minimal* set
- * of common behaviour, whether or not they share a common base class.
+ * Every Entity:
+ *
+ * - has an identity
+ * - that you can access by an `id` property
+ * - has a stored value
+ * - that you can get the valueOf()
+ *
+ * Your child classes should implement readonly `get` accessors for
+ * any fields of type `T` that you'd like to access without having
+ * to call `valueOf()` all the time.
  */
-export interface Entity<ID, T> {
+export abstract class EntityObject<ID, T> implements Entity<ID, T> {
     /**
-     * this entity's identity.
+     * this is the data that we wrap
      *
-     * this is normally one (or more) fields from `T`.
-     * this is normally implemented as a `get` accessor.
+     * child classes are welcome to access it directly (to avoid the cost
+     * of a call to `valueOf()`), but should never modify the data at all
      */
-    readonly __id__: ID;
-
+    protected readonly value: T;
     /**
-     * a type-guard. It proves that an object is a wrapper around type `T`
-     * that has ID `ID`.
+     * this constructor does no contract / specification enforcement at all
+     * do that in your constructor, before calling super()
      *
-     * added mostly for completeness
+     * if you don't need to enforce a contract, your class can safely
+     * create a public constructor
      */
-    isEntity(): this is Entity<ID, T>;
-
+    protected constructor (input: T) {
+        this.value = input;
+    }
+    /**
+     * returns the ID of this entity
+     */
+    abstract get __id__(): ID;
     /**
      * returns the wrapped value
      *
      * for types passed by reference, we do NOT return a clone of any kind.
      * You have to be careful not to accidentally change this value.
      */
-    valueOf(): T;
+    public valueOf(): T {
+        return this.value;
+    }
+    /**
+     * a type-guard. It proves that an object is a wrapper around type `T`
+     * that has ID `ID`.
+     *
+     * added mostly for completeness
+     */
+    public isEntity(): this is Entity<ID, T> {
+        return true;
+    }
 }
-
