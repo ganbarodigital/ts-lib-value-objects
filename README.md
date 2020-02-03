@@ -4,6 +4,8 @@
 
 This TypeScript library will help you create _value objects_ and _refined types_. They will help you write safer software that also performs better.
 
+**NOTE: This README documents the `v2` API. The older `V1` API is documented [here](./src/V1/README.md)**
+
 - [Introduction](#introduction)
 - [Quick Start](#quick-start)
 - [General Concepts](#general-concepts)
@@ -21,6 +23,10 @@ This TypeScript library will help you create _value objects_ and _refined types_
   - [Value.valueOf()](#valuevalueof)
   - [Advantages Of Value Objects](#advantages-of-value-objects)
   - [Disadvantages Of Value Objects](#disadvantages-of-value-objects)
+- [Entities and EntityObjects](#entities-and-entityobjects)
+  - [What Is An Entity?](#what-is-an-entity)
+  - [How Does An Entity Differ From A Value?](#how-does-an-entity-differ-from-a-value)
+  - [How To Build Entities](#how-to-build-entities)
 - [Refined Types](#refined-types)
   - [What Is A Refined Type?](#what-is-a-refined-type)
   - [What Is Type Refinement?](#what-is-type-refinement)
@@ -48,7 +54,7 @@ npm install @ganbarodigital/ts-lib-value-objects
 
 ```typescript
 // add this import to your Typescript code
-import { RefinedString } from "@ganbarodigital/ts-lib-value-objects/V1"
+import { RefinedString } from "@ganbarodigital/ts-lib-value-objects/v2"
 ```
 
 __VS Code users:__ once you've added a single import anywhere in your project, you'll then be able to auto-import anything else that this library exports.
@@ -160,7 +166,7 @@ export type TypeGuard<T> = (input: unknown) => input is T;
 A _type guard_ is a function that tells the TypeScript compiler to treat a value as a given type.
 
 ```typescript
-import { TypeGuard } from "@ganbarodigital/ts-lib-value-objects/V1";
+import { TypeGuard } from "@ganbarodigital/ts-lib-value-objects/v2";
 
 const isUuidType: TypeGuard<Uuid> = (input: unknown): input is Uuid => {
     if (input instanceof Uuid) {
@@ -213,7 +219,7 @@ A _data guard_ is a function. It inspects the given data, and returns `true` if 
 Data guards are an example of a _contract_ or _specification_, depending on what programming paradigm you subscribe to :)
 
 ```typescript
-import { DataGuard } from "@ganbarodigital/ts-lib-value-objects/V1";
+import { DataGuard } from "@ganbarodigital/ts-lib-value-objects/v2";
 
 const UuidRegex = new RegExp("^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$", "i");
 
@@ -258,7 +264,7 @@ The `OnError` handler decides which `Error` to throw. If it is called, the `OnEr
 
 ```typescript
 import { OnError } from "@ganbarodigital/ts-on-error/V1";
-import { DataGuarantee } from "@ganbarodigital/ts-lib-value-objects/V1";
+import { DataGuarantee } from "@ganbarodigital/ts-lib-value-objects/v2";
 
 const invalidUuid = Symbol("invalidUuid");
 
@@ -370,7 +376,7 @@ The `OnError` handler can do one of two things:
 
 ```typescript
 import { OnError } from "@ganbarodigital/ts-on-error/V1";
-import { DataCoercion } from "@ganbarodigital/ts-lib-value-objects/V1";
+import { DataCoercion } from "@ganbarodigital/ts-lib-value-objects/v2";
 
 const invalidUuid = Symbol("invalidUuid");
 
@@ -516,7 +522,7 @@ Define a class that:
 
 ```typescript
 import { OnError } from "@ganbarodigital/ts-on-error/V1";
-import { Value } from "@ganbarodigital/ts-lib-value-objects/V1";
+import { Value } from "@ganbarodigital/ts-lib-value-objects/v2";
 
 class Uuid extends Value<string> {
     public static from(input: string, onError: OnError): Uuid {
@@ -608,6 +614,92 @@ In no particular order ...
 * Value objects take up more RAM at runtime than refined types.
 * TypeScript v3.7.x (the latest at the time of writing) doesn't correctly support JavaScript's object-to-primitive auto-conversion mechanisms. If you're wrapping a `number`, you might prefer doing that as a _refined type_.
 
+## Entities and EntityObjects
+
+### What Is An Entity?
+
+An _entity_ is a value that has some form of identity. For example, database records that have primary keys are _entities_.
+
+```typescript
+/**
+ * Entity<ID, T> describes the behaviour of data that has an identity.
+ *
+ * It is useful for ensuring all entities have a *minimal* set
+ * of common behaviour, whether or not they share a common base class.
+ */
+export interface Entity<ID, T> {
+    /**
+     * this entity's identity.
+     *
+     * this is normally one (or more) fields from `T`.
+     * this is normally implemented as a `get` accessor.
+     */
+    readonly __id__: ID;
+
+    /**
+     * a type-guard. It proves that an object is a wrapper around type `T`
+     * that has ID `ID`.
+     *
+     * added mostly for completeness
+     */
+    isEntity(): this is Entity<ID, T>;
+
+    /**
+     * returns the wrapped value
+     *
+     * for types passed by reference, we do NOT return a clone of any kind.
+     * You have to be careful not to accidentally change this value.
+     */
+    valueOf(): T;
+}
+```
+
+### How Does An Entity Differ From A Value?
+
+They're very similar, in practice.
+
+* Both are wrappers around a value.
+* Both provide _smart constructors_ to make sure that they don't contain illegal values.
+* Both implement `valueOf()` to get at that wrapped value.
+* Both can implement individual `get` accessors to provide access to individual parts of the wrapped value.
+* They share the same advantages and disadvantages compared to _refined types_.
+
+The main difference is that an `Entity` provides a readonly property called `__id__` too. `__id__` will always be the identity of the `Entity`. For example, in a database record, `__id__` will always return the primary key.
+
+### How To Build Entities
+
+The process is almost the same as [building a value object](#how-to-build-value-objects).
+
+* Define one (or more) _data guards_.
+* Define a _data guarantee_ that uses your _data guard(s)_.
+* Define an interface (which we'll call `T`) to represent whatever record will be stored in the Entity object.
+* Define a type (or re-use an existing type) to represent the identity of your entity.
+* Define a class that:
+  - extends `EntityObject`,
+  - has a _smart constructor_,
+  - has a `get __id__()` _get accessor_,
+  - (maybe) has _get accessors_ for the individual members of your type `T`
+
+```typescript
+import { OnError } from "@ganbarodigital/ts-on-error/V1";
+import { EntityObject } from "@ganbarodigital/ts-lib-value-objects/lib/v2";
+
+class ExampleEntity extends EntityObject<ID, T> {
+    public static from(input, T: onError: OnError): ExampleEntity {
+        // call your smart constructor here
+        mustBeExample(input, onError);
+
+        return new ExampleEntity(input);
+    }
+
+    public get __id__(): ID {
+        // replace `primaryKey` with whatever field(s) form the identity
+        // of your entity
+        return input.primaryKey;
+    }
+}
+```
+
 ## Refined Types
 
 ### What Is A Refined Type?
@@ -683,7 +775,7 @@ import {
     Branded,
     RefinedTypeFactory,
     makeRefinedTypeFactory,
-} from "@ganbarodigital/ts-lib-value-objects/V1";
+} from "@ganbarodigital/ts-lib-value-objects/v2";
 
 // this is our branded type
 type Uuid = Branded<string, "uuid">;
@@ -726,7 +818,7 @@ function uuidToBytes(uuid: Uuid): Buffer {
 There's only one difference between _flavoured types_ and _branded types_: you can assign a compatible primitive to a _flavoured type_.
 
 ```typescript
-import { Flavoured } from "@ganbarodigital/ts-lib-value-objects/V1";
+import { Flavoured } from "@ganbarodigital/ts-lib-value-objects/v2";
 
 type Uuid = Flavoured<string, "uuid">;
 
@@ -744,7 +836,7 @@ _Branded types_ and _flavoured types_ don't give you the same level of type safe
 Unfortunately, **TypeScript won't tell you if you mix these types in an operation:**
 
 ```typescript
-import { Branded } from "@ganbarodigital/ts-lib-value-objects/V1";
+import { Branded } from "@ganbarodigital/ts-lib-value-objects/v2";
 
 type Inches = Branded<number, "inches">;
 type Centimetres = Branded<number, "centimetres">;
@@ -759,7 +851,7 @@ const c = a + b;
 To use _branded types_ and _flavoured types_ safely, make sure that you wrap any operations in a function:
 
 ```typescript
-import { Branded } from "@ganbarodigital/ts-lib-value-objects/V1";
+import { Branded } from "@ganbarodigital/ts-lib-value-objects/v2";
 
 type Inches = Branded<number, "inches">;
 type Centimetres = Branded<number, "centimetres">;
@@ -856,7 +948,7 @@ Both classes extend the [Value](#value-objects) class documented earlier. They a
 Here's an example of how to create a `Uuid` value object type, using the `RefinedString` class.
 
 ```typescript
-import { RefinedString } from "@ganbarodigital/ts-lib-value-objects/V1";
+import { RefinedString } from "@ganbarodigital/ts-lib-value-objects/v2";
 import { OnError } from "@ganbarodigital/ts-on-error/V1";
 
 const UuidRegex = new RegExp("^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$", "i");

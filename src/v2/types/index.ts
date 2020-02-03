@@ -35,5 +35,6 @@
 export * from "./DataCoercion";
 export * from "./DataGuarantee";
 export * from "./DataGuard";
+export * from "./Entity";
 export * from "./TypeGuard";
 export * from "./Value";
