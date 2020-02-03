@@ -39,6 +39,7 @@ This TypeScript library will help you create _value objects_ and _refined types_
   - [Disadvantages Of Refined Types](#disadvantages-of-refined-types)
 - [Refined Types As Value Objects](#refined-types-as-value-objects)
   - [RefinedString and RefinedNumber Classes](#refinedstring-and-refinednumber-classes)
+- [Converting From `V1` API To `v2` API](#converting-from-v1-api-to-v2-api)
 - [NPM Scripts](#npm-scripts)
   - [npm run clean](#npm-run-clean)
   - [npm run build](#npm-run-build)
@@ -990,6 +991,12 @@ Notes:
 * At the time of writing (TypeScript v3.7.x), TypeScript doesn't understand / support auto-conversion of objects to numbers, even though it is valid JavaScript. See [TypeScript issue 2031](https://github.com/microsoft/TypeScript/issues/2031) for where the bug was introduced, [TypeScript issue 4538](https://github.com/microsoft/TypeScript/issues/4538) for the main bug report, and [TypeScript issue 2361](https://github.com/microsoft/TypeScript/issues/2361) for where (we hope) work on the fix is being tracked.
 
     Until this TypeScript bug is fixed, you're probably better off using a [refined type](#refined-types) for numbers, instead of value objects.
+
+## Converting From `V1` API To `v2` API
+
+Got existing code that uses the `V1` API? Here's the steps that you need to take, to switch over to the `v2` API:
+
+* Search/replace `ts-lib-value-objects/V1` to be `ts-lib-value-objects/v2`
 
 ## NPM Scripts
 
