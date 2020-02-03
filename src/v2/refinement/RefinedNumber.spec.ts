@@ -33,7 +33,7 @@
 //
 import { OnError } from "@ganbarodigital/ts-on-error/V1";
 
-import { Value } from "../types/Value";
+import { ValueObject } from "../types/Value";
 import { RefinedNumber } from "./RefinedNumber";
 
 function mustBeAdultAge(input: number): void {
@@ -66,7 +66,7 @@ describe("RefinedNumber", () => {
         const inputValue = 21;
         const actualValue = AdultAge.from(inputValue);
 
-        expect(actualValue).toBeInstanceOf(Value);
+        expect(actualValue).toBeInstanceOf(ValueObject);
         expect(actualValue.valueOf()).toEqual(inputValue);
         expect(actualValue.isValue()).toBeTrue();
     });

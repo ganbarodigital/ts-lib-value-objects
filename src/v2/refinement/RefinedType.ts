@@ -33,7 +33,7 @@
 //
 import { OnError } from "@ganbarodigital/ts-on-error/V1";
 
-import { DataGuarantee, Value } from "../types";
+import { DataGuarantee, ValueObject } from "../types";
 
 /**
  * RefinedType is a base class for defining a subset of any given type.
@@ -47,7 +47,7 @@ import { DataGuarantee, Value } from "../types";
  * `T` is the type to be wrapped.
  * `EX` is the type of extra data passed to the OnError handler
  */
-export class RefinedType<T, EX = object> extends Value<T> {
+export class RefinedType<T, EX = object> extends ValueObject<T> {
     /**
      * define your own public constructor (or a static `from()` method if
      * you prefer that style, or want to support overloading)

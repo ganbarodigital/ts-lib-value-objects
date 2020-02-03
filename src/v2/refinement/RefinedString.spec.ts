@@ -33,7 +33,7 @@
 //
 import { OnError } from "@ganbarodigital/ts-on-error/V1";
 
-import { Value } from "../types/Value";
+import { ValueObject } from "../types/Value";
 import { RefinedString } from "./RefinedString";
 
 function mustBeUuid(input: string): void {
@@ -66,7 +66,7 @@ describe("RefinedString", () => {
         const inputValue = "123e4567-e89b-12d3-a456-426655440000";
         const actualValue = Uuid.from(inputValue);
 
-        expect(actualValue).toBeInstanceOf(Value);
+        expect(actualValue).toBeInstanceOf(ValueObject);
         expect(actualValue.valueOf()).toEqual(inputValue);
         expect(actualValue.isValue()).toBeTrue();
     });

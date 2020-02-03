@@ -31,9 +31,9 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
-import { Value } from "./Value";
+import { ValueObject } from "./Value";
 
-class ExampleValue extends Value<string> {
+class ExampleValue extends ValueObject<string> {
     public static from(input: string): ExampleValue {
         return new ExampleValue(input);
     }

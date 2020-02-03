@@ -33,18 +33,21 @@
 //
 
 /**
- * ValueObject<T> describes the behaviour of data that does have a value.
+ * Value<T> describes the behaviour of data that does have a value,
+ * but does not have an identity (a primary key).
  *
  * It is useful for ensuring all value objects have a *minimal* set
  * of common behaviour, whether or not they share a common base class.
+ *
+ * Use Entity<ID,T> for data that does have an identity.
  */
-export interface ValueObject<T> {
+export interface Value<T> {
     /**
      * a type-guard.
      *
      * added mostly for completeness
      */
-    isValue(): this is ValueObject<T>;
+    isValue(): this is Value<T>;
 
     /**
      * returns the wrapped value
@@ -56,7 +59,8 @@ export interface ValueObject<T> {
 }
 
 /**
- * Value<T> is the base class for defining your Value Object hierarchies.
+ * ValueObject<T> is the base class for defining your Value Object
+ * hierarchies.
  *
  * Every Value Object:
  *
@@ -68,8 +72,10 @@ export interface ValueObject<T> {
  *
  * If you do want fully-functional programming, use one of the many
  * excellent libraries that are out there instead.
+ *
+ * Use EntityObject<ID,T> for data that has an identity (a primary key).
  */
-export class Value<T> implements ValueObject<T> {
+export class ValueObject<T> implements Value<T> {
     /**
      * this is the data that we wrap
      *

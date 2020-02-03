@@ -19,8 +19,8 @@ This TypeScript library will help you create _value objects_ and _refined types_
 - [Value Objects](#value-objects)
   - [What Is A Value Object?](#what-is-a-value-object)
   - [How To Build Value Objects](#how-to-build-value-objects)
-  - [Value.isValue()](#valueisvalue)
-  - [Value.valueOf()](#valuevalueof)
+  - [ValueObject.isValue()](#valueobjectisvalue)
+  - [ValueObject.valueOf()](#valueobjectvalueof)
   - [Advantages Of Value Objects](#advantages-of-value-objects)
   - [Disadvantages Of Value Objects](#disadvantages-of-value-objects)
 - [Entities and EntityObjects](#entities-and-entityobjects)
@@ -289,10 +289,10 @@ Data guarantees get used in so-called _smart constructors_:
 
 ```typescript
 import { OnError } from "@ganbarodigital/ts-on-error";
-import { Value } from "@ganbarodigital/ts-lib-value-objects";
+import { ValueObject } from "@ganbarodigital/ts-lib-value-objects";
 
 // this is the value object approach
-class Uuid extends Value {
+class Uuid extends ValueObject {
     // `from()` is our smart constructor
     public static from(input: string, onError?: OnError): Uuid {
         // make sure we have an error handler
@@ -411,18 +411,21 @@ A _value object_ is:
 
 ```typescript
 /**
- * ValueObject<T> describes the behaviour of data that does have a value.
+ * Value<T> describes the behaviour of data that does have a value,
+ * but does not have an identity (a primary key).
  *
  * It is useful for ensuring all value objects have a *minimal* set
  * of common behaviour, whether or not they share a common base class.
+ *
+ * Use Entity<ID,T> for data that does have an identity.
  */
-export interface ValueObject<T> {
+export interface Value<T> {
     /**
      * a type-guard.
      *
      * added mostly for completeness
      */
-    isValue(): this is ValueObject<T>;
+    isValue(): this is Value<T>;
 
     /**
      * returns the wrapped value
@@ -434,7 +437,8 @@ export interface ValueObject<T> {
 }
 
 /**
- * Value<T> is the base class for defining your Value Object hierarchies.
+ * ValueObject<T> is the base class for defining your Value Object
+ * hierarchies.
  *
  * Every Value Object:
  *
@@ -446,6 +450,8 @@ export interface ValueObject<T> {
  *
  * If you do want fully-functional programming, use one of the many
  * excellent libraries that are out there instead.
+ *
+ * Use EntityObject<ID,T> for data that has an identity (a primary key).
  */
 export class Value<T> implements ValueObject<T> {
     /**
@@ -482,7 +488,7 @@ export class Value<T> implements ValueObject<T> {
      *
      * added mostly for completeness
      */
-    public isValue(): this is ValueObject<T> {
+    public isValue(): this is Value<T> {
         return true;
     }
 }
@@ -518,14 +524,14 @@ export function mustBeUuidData(input: string, onError: OnError): void {
 
 Define a class that:
 
-* extends `Value`, and
+* extends `ValueObject`, and
 * has a _smart constructor_
 
 ```typescript
 import { OnError } from "@ganbarodigital/ts-on-error/V1";
-import { Value } from "@ganbarodigital/ts-lib-value-objects/v2";
+import { ValueObject } from "@ganbarodigital/ts-lib-value-objects/v2";
 
-class Uuid extends Value<string> {
+class Uuid extends ValueObject<string> {
     public static from(input: string, onError: OnError): Uuid {
         // enforce the contract / specification!
         mustBeUuidData(input, onError);
@@ -553,29 +559,29 @@ function uuidToBytes(uuid: Uuid): Buffer {
 }
 ```
 
-### Value.isValue()
+### ValueObject.isValue()
 
 Every value object comes with a `isValue()` method:
 
 ```typescript
-class Value {
+class ValueObject {
     /**
      * a type-guard.
      *
      * added mostly for completeness
      */
-    isValue(): this is ValueObject<T>;
+    isValue(): this is Value<T>;
 }
 ```
 
 Honestly, I can't think of an example of where you'd need to call it. It's there if you ever need it!
 
-### Value.valueOf()
+### ValueObject.valueOf()
 
 Every value object comes with a `valueOf()` method:
 
 ```typescript
-class Value {
+class ValueObject {
     /**
      * returns the wrapped value
      *
@@ -944,7 +950,7 @@ If you want to create refined types that are still full-blown [value objects](#v
 
 `RefinedString` and `RefinedNumber` are two classes we export for you. They're identical, except that one is for wrapping a `string`, and the other is for wrapping a `number`.
 
-Both classes extend the [Value](#value-objects) class documented earlier. They also add some additional methods to help Javascript auto-convert to a primitive in some circumstances (for example, writing to the `console.log()`).
+Both classes extend the [ValueObject](#value-objects) class documented earlier. They also add some additional methods to help Javascript auto-convert to a primitive in some circumstances (for example, writing to the `console.log()`).
 
 Here's an example of how to create a `Uuid` value object type, using the `RefinedString` class.
 
@@ -997,6 +1003,8 @@ Notes:
 Got existing code that uses the `V1` API? Here's the steps that you need to take, to switch over to the `v2` API:
 
 * Search/replace `ts-lib-value-objects/V1` to be `ts-lib-value-objects/v2`
+* Any value objects must now implement the `Value` interface. It was called `ValueObject` in the `V1` API.
+* Any value objects must now extend the `ValueObject` base class. It was called `Value` in the `v1` API.
 
 ## NPM Scripts
 
