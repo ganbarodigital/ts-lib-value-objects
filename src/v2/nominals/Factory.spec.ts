@@ -32,6 +32,8 @@
 // POSSIBILITY OF SUCH DAMAGE.
 //
 import { AnyAppError, OnError } from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
+import { expect } from "chai";
+import { describe } from "mocha";
 
 import { NeverABrandedUuidError } from "../fixtures";
 import { NeverAFlavouredUuidError } from "../fixtures/NeverAFlavouredUuid";
@@ -75,13 +77,13 @@ function flavouredUuidIdentity(input: FlavouredUuid): FlavouredUuid {
     return input;
 }
 
-describe("makeTypeRefinementFactory", () => {
+describe("v2 makeTypeRefinementFactory()", () => {
     it("returns a function", () => {
         const unit: BrandedUuidFactory = makeRefinedTypeFactory(
             mustBeBrandedUuid,
         );
 
-        expect(unit).toBeInstanceOf(Function);
+        expect(unit).to.be.instanceOf(Function);
     });
 
     it("creates a smart constructor for branded types", () => {
@@ -99,7 +101,7 @@ describe("makeTypeRefinementFactory", () => {
         const inputValue = "123e4567-e89b-12d3-a456-426655440000";
         const actualValue = brandedUuidIdentity(uuidFrom(inputValue));
 
-        expect(inputValue).toEqual(actualValue);
+        expect(inputValue).to.equal(actualValue);
     });
 
     it("creates a smart constructor for flavoured types", () => {
@@ -117,7 +119,7 @@ describe("makeTypeRefinementFactory", () => {
         const inputValue = "123e4567-e89b-12d3-a456-426655440000";
         const actualValue = flavouredUuidIdentity(uuidFrom(inputValue));
 
-        expect(inputValue).toEqual(actualValue);
+        expect(inputValue).to.equal(actualValue);
     });
 
     // tslint:disable-next-line: max-line-length
@@ -128,7 +130,7 @@ describe("makeTypeRefinementFactory", () => {
         );
 
         const inputValue = "123e4567-e89b-12d3-a456-426655440000";
-        expect(() => {brandedUuidIdentity(uuidFrom(inputValue)); }).toThrowError("DEFAULT ERROR HANDLER CALLED");
+        expect(() => {brandedUuidIdentity(uuidFrom(inputValue)); }).to.throw("DEFAULT ERROR HANDLER CALLED");
     });
 
     // tslint:disable-next-line: max-line-length
@@ -139,7 +141,7 @@ describe("makeTypeRefinementFactory", () => {
         );
 
         const inputValue = "123e4567-e89b-12d3-a456-426655440000";
-        expect(() => {brandedUuidIdentity(uuidFrom(inputValue)); }).toThrowError("DEFAULT ERROR HANDLER CALLED");
+        expect(() => {brandedUuidIdentity(uuidFrom(inputValue)); }).to.throw("DEFAULT ERROR HANDLER CALLED");
     });
 
     it("creates a smart constructor that accepts an optional error handler", () => {
@@ -153,6 +155,6 @@ describe("makeTypeRefinementFactory", () => {
         );
 
         const inputValue = "123e4567-e89b-12d3-a456-426655440000";
-        expect(() => {brandedUuidIdentity(uuidFrom(inputValue, localOnErrorHandler)); }).toThrowError("LOCAL ERROR HANDLER CALLED");
+        expect(() => {brandedUuidIdentity(uuidFrom(inputValue, localOnErrorHandler)); }).to.throw("LOCAL ERROR HANDLER CALLED");
     });
 });

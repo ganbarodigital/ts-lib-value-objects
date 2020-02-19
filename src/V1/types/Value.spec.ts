@@ -31,6 +31,9 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
+import { expect } from "chai";
+import { describe } from "mocha";
+
 import { Value } from "./Value";
 
 class ExampleValue extends Value<string> {
@@ -39,38 +42,40 @@ class ExampleValue extends Value<string> {
     }
 }
 
-describe("new Value()", () => {
-    it("stores the input inside the value object", () => {
-        const inputValue = "123e4567-e89b-12d3-a456-426655440000";
-        const expectedValue = inputValue;
+describe("v1 Value", () => {
+    describe("constructor", () => {
+        it("stores the input inside the value object", () => {
+            const inputValue = "123e4567-e89b-12d3-a456-426655440000";
+            const expectedValue = inputValue;
 
-        const unit = ExampleValue.from(inputValue);
-        const actualValue = unit.valueOf();
+            const unit = ExampleValue.from(inputValue);
+            const actualValue = unit.valueOf();
 
-        expect(actualValue).toEqual(expectedValue);
+            expect(actualValue).to.equal(expectedValue);
+        });
     });
-});
 
-describe("Value.valueOf()", () => {
-    it("returns the value stored inside the value object", () => {
-        const inputValue = "123e4567-e89b-12d3-a456-426655440000";
-        const expectedValue = inputValue;
+    describe(".valueOf()", () => {
+        it("returns the value stored inside the value object", () => {
+            const inputValue = "123e4567-e89b-12d3-a456-426655440000";
+            const expectedValue = inputValue;
 
-        const unit = ExampleValue.from(inputValue);
-        const actualValue = unit.valueOf();
+            const unit = ExampleValue.from(inputValue);
+            const actualValue = unit.valueOf();
 
-        expect(actualValue).toEqual(expectedValue);
+            expect(actualValue).to.equal(expectedValue);
+        });
     });
-});
 
-describe("Value.isValue()", () => {
-    it("returns true", () => {
-        const inputValue = "123e4567-e89b-12d3-a456-426655440000";
-        const expectedValue = true;
+    describe(".isValue()", () => {
+        it("returns true", () => {
+            const inputValue = "123e4567-e89b-12d3-a456-426655440000";
+            const expectedValue = true;
 
-        const unit = ExampleValue.from(inputValue);
-        const actualValue = unit.isValue();
+            const unit = ExampleValue.from(inputValue);
+            const actualValue = unit.isValue();
 
-        expect(actualValue).toEqual(expectedValue);
+            expect(actualValue).to.equal(expectedValue);
+        });
     });
 });

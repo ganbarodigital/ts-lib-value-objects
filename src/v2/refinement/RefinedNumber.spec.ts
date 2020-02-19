@@ -32,6 +32,8 @@
 // POSSIBILITY OF SUCH DAMAGE.
 //
 import { AnyAppError, OnError } from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
+import { expect } from "chai";
+import { describe } from "mocha";
 
 import { NeverAdultAgeError } from "../fixtures";
 import { ValueObject } from "../types/ValueObject";
@@ -62,19 +64,19 @@ class NeverAdultAge extends RefinedNumber {
     }
 }
 
-describe("RefinedNumber", () => {
+describe("v2 RefinedNumber", () => {
     it("is a value object", () => {
         const inputValue = 21;
         const actualValue = AdultAge.from(inputValue);
 
-        expect(actualValue).toBeInstanceOf(ValueObject);
-        expect(actualValue.valueOf()).toEqual(inputValue);
-        expect(actualValue.isValue()).toBeTrue();
+        expect(actualValue).to.be.instanceOf(ValueObject);
+        expect(actualValue.valueOf()).to.equal(inputValue);
+        expect(actualValue.isValue()).to.equal(true);
     });
 
     it("calls the error handler when the guarantee fails", () => {
         const inputValue = 5;
-        expect(() => {NeverAdultAge.from(inputValue); }).toThrowError("DEFAULT ERROR HANDLER CALLED");
+        expect(() => {NeverAdultAge.from(inputValue); }).to.throw("DEFAULT ERROR HANDLER CALLED");
     });
 
     it("auto-converts to a string", () => {
@@ -83,7 +85,7 @@ describe("RefinedNumber", () => {
         const expectedValue = "this person is " + inputValue + " years old";
 
         const actualValue = "this person is " + age + " years old";
-        expect(actualValue).toEqual(expectedValue);
+        expect(actualValue).to.equal(expectedValue);
 
         // the test above doesn't work the way we expect, even though we
         // do get the result we want
@@ -96,7 +98,7 @@ describe("RefinedNumber", () => {
         // works if it is ever called with a `string` hint
 
         const actualString = age[Symbol.toPrimitive]("string");
-        expect(actualString).toEqual("21");
+        expect(actualString).to.equal("21");
     });
 
     it("auto-converts to a number", () => {
@@ -115,6 +117,6 @@ describe("RefinedNumber", () => {
         const age = AdultAge.from(inputValue);
 
         const actualValue = age[Symbol.toPrimitive]("number");
-        expect(actualValue).toEqual(21);
+        expect(actualValue).to.equal(21);
     });
 });

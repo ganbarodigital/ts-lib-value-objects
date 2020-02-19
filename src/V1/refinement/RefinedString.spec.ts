@@ -32,6 +32,8 @@
 // POSSIBILITY OF SUCH DAMAGE.
 //
 import { OnError } from "@ganbarodigital/ts-on-error/V1";
+import { expect } from "chai";
+import { describe } from "mocha";
 
 import { Value } from "../types/Value";
 import { RefinedString } from "./RefinedString";
@@ -61,19 +63,19 @@ class NeverUuid extends RefinedString {
     }
 }
 
-describe("RefinedString", () => {
+describe("v1 RefinedString", () => {
     it("is a value object", () => {
         const inputValue = "123e4567-e89b-12d3-a456-426655440000";
         const actualValue = Uuid.from(inputValue);
 
-        expect(actualValue).toBeInstanceOf(Value);
-        expect(actualValue.valueOf()).toEqual(inputValue);
-        expect(actualValue.isValue()).toBeTrue();
+        expect(actualValue).to.be.instanceOf(Value);
+        expect(actualValue.valueOf()).to.equal(inputValue);
+        expect(actualValue.isValue()).to.equal(true);
     });
 
     it("calls the error handler when the guarantee fails", () => {
         const inputValue = "123e4567-e89b-12d3-a456-426655440000";
-        expect(() => {NeverUuid.from(inputValue); }).toThrowError("DEFAULT ERROR HANDLER CALLED");
+        expect(() => {NeverUuid.from(inputValue); }).to.throw("DEFAULT ERROR HANDLER CALLED");
     });
 
     it("auto-converts to a string", () => {
@@ -82,7 +84,7 @@ describe("RefinedString", () => {
         const expectedValue = "this is a uuid: " + inputValue;
 
         const actualValue = "this is a uuid: " + uuid;
-        expect(actualValue).toEqual(expectedValue);
+        expect(actualValue).to.equal(expectedValue);
     });
 
     it("does not auto-convert to a number", () => {
@@ -90,6 +92,6 @@ describe("RefinedString", () => {
         const uuid = Uuid.from(inputValue);
 
         const actualValue = uuid[Symbol.toPrimitive]("number");
-        expect(actualValue).toBeNull();
+        expect(actualValue).to.equal(null);
     });
 });

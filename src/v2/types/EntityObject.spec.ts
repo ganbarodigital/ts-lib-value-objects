@@ -31,6 +31,9 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
+import { expect } from "chai";
+import { describe } from "mocha";
+
 import { EntityObject } from "./EntityObject";
 
 interface ExampleRecord {
@@ -48,62 +51,64 @@ class ExampleEntity extends EntityObject<number, ExampleRecord> {
     }
 }
 
-describe("new Entity()", () => {
-    it("stores the input inside the Entity object", () => {
-        const inputEntity: ExampleRecord = {
-            id: 100,
-            field1: "hello, unit test!",
-        };
-        const expectedEntity = inputEntity;
+describe("v2 Entity", () => {
+    describe("constructor", () => {
+        it("stores the input inside the Entity object", () => {
+            const inputEntity: ExampleRecord = {
+                id: 100,
+                field1: "hello, unit test!",
+            };
+            const expectedEntity = inputEntity;
 
-        const unit = ExampleEntity.from(inputEntity);
-        const actualEntity = unit.valueOf();
+            const unit = ExampleEntity.from(inputEntity);
+            const actualEntity = unit.valueOf();
 
-        expect(actualEntity).toEqual(expectedEntity);
+            expect(actualEntity).to.equal(expectedEntity);
+        });
     });
-});
 
-describe("Entity.valueOf()", () => {
-    it("returns the Entity stored inside the Entity object", () => {
-        const inputEntity: ExampleRecord = {
-            id: 100,
-            field1: "hello, unit test!",
-        };
-        const expectedEntity = inputEntity;
+    describe(".valueOf()", () => {
+        it("returns the Entity stored inside the Entity object", () => {
+            const inputEntity: ExampleRecord = {
+                id: 100,
+                field1: "hello, unit test!",
+            };
+            const expectedEntity = inputEntity;
 
-        const unit = ExampleEntity.from(inputEntity);
-        const actualEntity = unit.valueOf();
+            const unit = ExampleEntity.from(inputEntity);
+            const actualEntity = unit.valueOf();
 
-        expect(actualEntity).toEqual(expectedEntity);
+            expect(actualEntity).to.equal(expectedEntity);
+        });
     });
-});
 
-describe("Entity.idOf()", () => {
-    it("returns the identity of the wrapped record", () => {
-        const inputEntity: ExampleRecord = {
-            id: 100,
-            field1: "hello, unit test!",
-        };
-        const expectedValue = 100;
+    describe(".idOf()", () => {
+        it("returns the identity of the wrapped record", () => {
+            const inputEntity: ExampleRecord = {
+                id: 100,
+                field1: "hello, unit test!",
+            };
+            const expectedValue = 100;
 
-        const unit = ExampleEntity.from(inputEntity);
-        const actualValue = unit.idOf();
+            const unit = ExampleEntity.from(inputEntity);
+            const actualValue = unit.idOf();
 
-        expect(actualValue).toEqual(expectedValue);
+            expect(actualValue).to.equal(expectedValue);
+        });
     });
-});
 
-describe("Entity.isEntity()", () => {
-    it("returns true", () => {
-        const inputEntity: ExampleRecord = {
-            id: 100,
-            field1: "hello, unit test!",
-        };
-        const expectedValue = true;
+    describe(".isEntity()", () => {
+        it("returns true", () => {
+            const inputEntity: ExampleRecord = {
+                id: 100,
+                field1: "hello, unit test!",
+            };
+            const expectedValue = true;
 
-        const unit = ExampleEntity.from(inputEntity);
-        const actualValue = unit.isEntity();
+            const unit = ExampleEntity.from(inputEntity);
+            const actualValue = unit.isEntity();
 
-        expect(actualValue).toEqual(expectedValue);
+            expect(actualValue).to.equal(expectedValue);
+        });
     });
 });

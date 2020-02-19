@@ -31,15 +31,18 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
+import { expect } from "chai";
+import { describe } from "mocha";
+
 import { Flavoured } from "./Flavoured";
 
 type FlavouredUuid = Flavoured<string, "uuid">;
 
-describe("flavoured types", () => {
+describe("v1 flavoured types", () => {
     it("can be cast from a suitable primitive", () => {
         const inputValue = "123e4567-e89b-12d3-a456-426655440000";
         const actualValue = "123e4567-e89b-12d3-a456-426655440000" as FlavouredUuid;
 
-        expect(inputValue).toEqual(actualValue);
+        expect(inputValue).to.equal(actualValue);
     });
 });

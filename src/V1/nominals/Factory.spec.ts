@@ -32,6 +32,8 @@
 // POSSIBILITY OF SUCH DAMAGE.
 //
 import { OnError } from "@ganbarodigital/ts-on-error/V1";
+import { expect } from "chai";
+import { describe } from "mocha";
 
 import { Branded } from "./Branded";
 import { makeRefinedTypeFactory, RefinedTypeFactory } from "./Factory";
@@ -73,14 +75,14 @@ function flavouredUuidIdentity(input: FlavouredUuid): FlavouredUuid {
     return input;
 }
 
-describe("makeTypeRefinementFactory", () => {
+describe("v1 makeTypeRefinementFactory()", () => {
     it("returns a function", () => {
         const unit: BrandedUuidFactory = makeRefinedTypeFactory(
             mustBeBrandedUuid,
             defaultOnErrorHandler,
         );
 
-        expect(unit).toBeInstanceOf(Function);
+        expect(unit).to.be.instanceOf(Function);
     });
 
     it("creates a smart constructor for branded types", () => {
@@ -99,7 +101,7 @@ describe("makeTypeRefinementFactory", () => {
         const inputValue = "123e4567-e89b-12d3-a456-426655440000";
         const actualValue = brandedUuidIdentity(uuidFrom(inputValue));
 
-        expect(inputValue).toEqual(actualValue);
+        expect(inputValue).to.equal(actualValue);
     });
 
     it("creates a smart constructor for flavoured types", () => {
@@ -118,7 +120,7 @@ describe("makeTypeRefinementFactory", () => {
         const inputValue = "123e4567-e89b-12d3-a456-426655440000";
         const actualValue = flavouredUuidIdentity(uuidFrom(inputValue));
 
-        expect(inputValue).toEqual(actualValue);
+        expect(inputValue).to.equal(actualValue);
     });
 
     it("creates a smart constructor that calls the default error handler when the guarantee fails", () => {
@@ -128,7 +130,7 @@ describe("makeTypeRefinementFactory", () => {
         );
 
         const inputValue = "123e4567-e89b-12d3-a456-426655440000";
-        expect(() => {brandedUuidIdentity(uuidFrom(inputValue, defaultOnErrorHandler)); }).toThrowError("DEFAULT ERROR HANDLER CALLED");
+        expect(() => {brandedUuidIdentity(uuidFrom(inputValue, defaultOnErrorHandler)); }).to.throw("DEFAULT ERROR HANDLER CALLED");
     });
 
     it("creates a smart constructor that accepts an optional error handler", () => {
@@ -142,6 +144,6 @@ describe("makeTypeRefinementFactory", () => {
         );
 
         const inputValue = "123e4567-e89b-12d3-a456-426655440000";
-        expect(() => {brandedUuidIdentity(uuidFrom(inputValue, localOnErrorHandler)); }).toThrowError("LOCAL ERROR HANDLER CALLED");
+        expect(() => {brandedUuidIdentity(uuidFrom(inputValue, localOnErrorHandler)); }).to.throw("LOCAL ERROR HANDLER CALLED");
     });
 });
