@@ -43,9 +43,8 @@ export interface Entity<ID, T> {
      * this entity's identity.
      *
      * this is normally one (or more) fields from `T`.
-     * this is normally implemented as a `get` accessor.
      */
-    readonly __id__: ID;
+    idOf(): ID;
 
     /**
      * a type-guard. It proves that an object is a wrapper around type `T`
@@ -63,4 +62,3 @@ export interface Entity<ID, T> {
      */
     valueOf(): T;
 }
-

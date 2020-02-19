@@ -31,7 +31,7 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
-import { OnError } from "@ganbarodigital/ts-on-error/lib/V1";
+import { AnyAppError, OnError } from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
 
 /**
  * A DataCoercion inspects the given data, to see if the given data
@@ -48,14 +48,13 @@ import { OnError } from "@ganbarodigital/ts-on-error/lib/V1";
  * b) it can return a value that does meet the given contract / specification
  *
  * `T` is the type of data to be inspected
- * - `T` is also the return type of the supplied `OnError` handler
  * `GR` is the return type of the data guarantee function
  * - it *must* be compatible with `T` in some way
- * `EX` is the type of information passed to the OnError handler
+ * - `GR` is also the return type of the supplied `OnError` handler
  *
  * When you implement a DataCoercion, make it a wrapper around one or more
  * TypeGuards and/or DataGuards - and even other DataCoercions if
  * appropriate. That's the best way to make your code as reusable as possible.
  */
-export type DataCoercion<T, GR extends T, EX = object>
-  = (input: T, onError: OnError<EX, T>) => GR;
+export type DataCoercion<T, GR extends T = T>
+  = (input: T, onError: OnError<AnyAppError, GR>) => GR;

@@ -31,8 +31,9 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
-import { OnError } from "@ganbarodigital/ts-on-error/V1";
+import { AnyAppError, OnError } from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
 
+import { NeverAdultAgeError } from "../fixtures";
 import { ValueObject } from "../types/ValueObject";
 import { RefinedNumber } from "./RefinedNumber";
 
@@ -41,10 +42,10 @@ function mustBeAdultAge(input: number): void {
 }
 
 function neverAdultAge(input: number, onError: OnError): never {
-    throw onError(Symbol("neverAdultAge"), "never adult age", {input});
+    throw onError(new NeverAdultAgeError({public: { input }}));
 }
 
-function defaultOnErrorHandler(reason: symbol, description: string, extra: object): never {
+function defaultOnErrorHandler(e: AnyAppError): never {
     throw new Error("DEFAULT ERROR HANDLER CALLED");
 }
 

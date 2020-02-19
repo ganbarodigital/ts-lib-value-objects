@@ -58,6 +58,7 @@ export class ValueObject<T> implements Value<T> {
      * of a call to `valueOf()`), but should never modify the data at all
      */
     protected readonly value: T;
+
     /**
      * this constructor does no contract / specification enforcement at all
      * do that in your constructor, before calling super()
@@ -65,9 +66,10 @@ export class ValueObject<T> implements Value<T> {
      * if you don't need to enforce a contract, your class can safely
      * create a public constructor
      */
-    protected constructor (input: T) {
+    protected constructor(input: T) {
         this.value = input;
     }
+
     /**
      * returns the wrapped value
      *
@@ -77,6 +79,7 @@ export class ValueObject<T> implements Value<T> {
     public valueOf(): T {
         return this.value;
     }
+
     /**
      * a type-guard. It proves that an object is a wrapper around type `T`.
      *

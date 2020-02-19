@@ -39,8 +39,7 @@ import { RefinedType } from "./RefinedType";
  * and enforced by a DataGuarantee.
  *
  * `T` is the type to be wrapped.
- * `EX` is the type of extra data passed to the OnError handler
  */
-export abstract class RefinedPrimitive<T, EX = object> extends RefinedType<T, EX> {
+export abstract class RefinedPrimitive<T> extends RefinedType<T> {
     public abstract [Symbol.toPrimitive](hint: string): string|number|boolean|null;
 }

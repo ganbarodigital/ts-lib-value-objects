@@ -27,6 +27,7 @@ We've introduced a `v2` API, to correct some mistakes we made in the design of t
 
 * The `ValueObject` interface is now called `Value`
 * The `Value` class is now called `ValueObject`
+* `OnError` callbacks now use the `ts-lib-error-reporting` format
 
 ### New
 

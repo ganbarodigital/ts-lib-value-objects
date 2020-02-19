@@ -31,7 +31,7 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
-import { OnError } from "@ganbarodigital/ts-on-error/lib/V1";
+import { OnError } from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
 
 /**
  * A DataGuarantee inspects the given data, to see if the given data
@@ -45,11 +45,10 @@ import { OnError } from "@ganbarodigital/ts-on-error/lib/V1";
  * handler must throw an Error of some kind.
  *
  * `T` is the type of data to be inspected
- * `EX` is the type of information passed to the OnError handler
  *
  * When you implement a DataGuarantee, make it a wrapper around one or more
  * TypeGuards and/or DataGuards - and even other DataGuarantees if
  * appropriate. That's the best way to make your code as reusable as possible.
  */
-export type DataGuarantee<T, EX = object>
-  = (input: T, onError: OnError<EX, never>) => void;
+export type DataGuarantee<T>
+  = (input: T, onError: OnError) => void;

@@ -31,46 +31,51 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
-import { OnError, THROW_THE_ERROR } from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
+import {
+    AppError,
+    AppErrorParams,
+    ErrorTableTemplateWithNoExtraData,
+    NoExtraDataTemplate,
+    StructuredProblemReport,
+    StructuredProblemReportDataWithNoExtraData,
+} from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
 
-import { DataGuarantee } from "../types";
+import { UNIT_TEST_ERROR_TABLE, UnitTestErrorTable } from "./ErrorTable";
 
-export type RefinedTypeFactory<BI, BR> = (input: BI, onError?: OnError) => BR;
+export type NeverAFlavouredUuidExtraData = NoExtraDataTemplate;
+export type NeverAFlavouredUuidTemplate = ErrorTableTemplateWithNoExtraData<
+    UnitTestErrorTable,
+    "never-a-flavoured-uuid",
+    NeverAFlavouredUuidExtraData
+>;
+export type NeverAFlavouredUuidData = StructuredProblemReportDataWithNoExtraData<
+    UnitTestErrorTable,
+    "never-a-flavoured-uuid",
+    NeverAFlavouredUuidTemplate,
+    NeverAFlavouredUuidExtraData
+>;
+export type NeverAFlavouredUuidSRP = StructuredProblemReport<
+    UnitTestErrorTable,
+    "never-a-flavoured-uuid",
+    NeverAFlavouredUuidTemplate,
+    NeverAFlavouredUuidExtraData,
+    NeverAFlavouredUuidData
+>;
 
-/**
- * makeRefinedTypeFactory creates factories for your branded and
- * flavoured types.
- *
- * You tell it:
- *
- * - what input type your factory should accept
- * - the DataGuarantee to enforce
- * - the default error handler to call if the DataGuarantee fails
- * - what output type your factory should return
- *
- * and it will return a type-safe function that you can re-use to validate
- * and create your branded and flavoured types.
- *
- * `BI` is the input type that your factory accepts (e.g. `string`)
- * `BR` is the type that your factory returns
- *
- * @param mustBe
- *        this will be called every time you use the function that we return.
- *        Make sure that it has no side-effects whatsoever.
- * @param defaultOnError
- *        the function that we return has an optional `onError` parameter.
- *        If the caller doesn't provide an `onError` parameter, the function
- *        will call this error handler instead.
- */
-export const makeRefinedTypeFactory = <BI, BR>(
-    mustBe: DataGuarantee<BI>,
-    defaultOnError: OnError = THROW_THE_ERROR,
-): RefinedTypeFactory<BI, BR> => {
-    return (input: BI, onError: OnError = defaultOnError): BR => {
-        // enforce the contract
-        mustBe(input, onError);
+export class NeverAFlavouredUuidError extends AppError<
+    UnitTestErrorTable,
+    "never-a-flavoured-uuid",
+    NeverAFlavouredUuidTemplate,
+    NeverAFlavouredUuidExtraData,
+    NeverAFlavouredUuidData,
+    NeverAFlavouredUuidSRP
+> {
+    public constructor(params: AppErrorParams = {}) {
+        const errorData: NeverAFlavouredUuidData = {
+            template: UNIT_TEST_ERROR_TABLE["never-a-flavoured-uuid"],
+            errorId: params.errorId,
+        };
 
-        // we're good at this point
-        return (input as unknown) as BR;
-    };
-};
+        super(StructuredProblemReport.from(errorData));
+    }
+}

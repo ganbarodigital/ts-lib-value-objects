@@ -31,46 +31,48 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
-import { OnError, THROW_THE_ERROR } from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
+import {
+    ErrorTable,
+    ErrorTableTemplateWithNoExtraData,
+    ExtraDataTemplate,
+    NoExtraDataTemplate,
+    PACKAGE_NAME,
+} from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
+import { httpStatusCodeFrom } from "@ganbarodigital/ts-lib-http-types/lib/v1";
 
-import { DataGuarantee } from "../types";
+import { NeverABrandedUuidTemplate } from "./NeverABrandedUuid";
+import { NeverAdultAgeTemplate } from "./NeverAdultAge";
+import { NeverAFlavouredUuidTemplate } from "./NeverAFlavouredUuid";
 
-export type RefinedTypeFactory<BI, BR> = (input: BI, onError?: OnError) => BR;
+export class UnitTestErrorTable implements ErrorTable {
+    [key: string]: ErrorTableTemplateWithNoExtraData<any, string, ExtraDataTemplate | NoExtraDataTemplate>;
 
-/**
- * makeRefinedTypeFactory creates factories for your branded and
- * flavoured types.
- *
- * You tell it:
- *
- * - what input type your factory should accept
- * - the DataGuarantee to enforce
- * - the default error handler to call if the DataGuarantee fails
- * - what output type your factory should return
- *
- * and it will return a type-safe function that you can re-use to validate
- * and create your branded and flavoured types.
- *
- * `BI` is the input type that your factory accepts (e.g. `string`)
- * `BR` is the type that your factory returns
- *
- * @param mustBe
- *        this will be called every time you use the function that we return.
- *        Make sure that it has no side-effects whatsoever.
- * @param defaultOnError
- *        the function that we return has an optional `onError` parameter.
- *        If the caller doesn't provide an `onError` parameter, the function
- *        will call this error handler instead.
- */
-export const makeRefinedTypeFactory = <BI, BR>(
-    mustBe: DataGuarantee<BI>,
-    defaultOnError: OnError = THROW_THE_ERROR,
-): RefinedTypeFactory<BI, BR> => {
-    return (input: BI, onError: OnError = defaultOnError): BR => {
-        // enforce the contract
-        mustBe(input, onError);
-
-        // we're good at this point
-        return (input as unknown) as BR;
+    public "never-a-branded-uuid": NeverABrandedUuidTemplate = {
+        packageName: PACKAGE_NAME,
+        errorName: "never-a-branded-uuid",
+        status: httpStatusCodeFrom(500),
+        detail: "value is not a branded uuid",
     };
-};
+
+    public "never-a-flavoured-uuid": NeverAFlavouredUuidTemplate = {
+        packageName: PACKAGE_NAME,
+        errorName: "never-a-flavoured-uuid",
+        status: httpStatusCodeFrom(500),
+        detail: "value is not a flavoured uuid",
+    };
+
+    public "never-adult-age": NeverAdultAgeTemplate = {
+        packageName: PACKAGE_NAME,
+        errorName: "never-adult-age",
+        status: httpStatusCodeFrom(500),
+        detail: "value is lower than minimum adult age",
+        extra: {
+            public: {
+                // the age that we have been given
+                input: 0,
+            },
+        },
+    };
+}
+
+export const UNIT_TEST_ERROR_TABLE = new UnitTestErrorTable();

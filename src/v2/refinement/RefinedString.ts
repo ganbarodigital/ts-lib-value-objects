@@ -40,10 +40,8 @@ import { RefinedPrimitive } from "./RefinedPrimitive";
  *
  * The DataGuarantee and OnError handler are passed into the base class's
  * constructor().
- *
- * `EX` is the type of extra data passed to the OnError handler
  */
-export class RefinedString<EX = object> extends RefinedPrimitive<string, EX> {
+export class RefinedString extends RefinedPrimitive<string> {
     public [Symbol.toPrimitive](hint: string): string|null {
         if (hint === "number") {
             return null;

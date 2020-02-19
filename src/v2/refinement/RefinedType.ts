@@ -31,7 +31,7 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
-import { OnError } from "@ganbarodigital/ts-on-error/V1";
+import { OnError } from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
 
 import { DataGuarantee, ValueObject } from "../types";
 
@@ -45,9 +45,8 @@ import { DataGuarantee, ValueObject } from "../types";
  * JavaScript auto-resolve to the wrapped primitive in some circumstances.
  *
  * `T` is the type to be wrapped.
- * `EX` is the type of extra data passed to the OnError handler
  */
-export class RefinedType<T, EX = object> extends ValueObject<T> {
+export class RefinedType<T> extends ValueObject<T> {
     /**
      * define your own public constructor (or a static `from()` method if
      * you prefer that style, or want to support overloading)
@@ -73,8 +72,8 @@ export class RefinedType<T, EX = object> extends ValueObject<T> {
      */
     protected constructor(
         input: T,
-        mustBe: DataGuarantee<T, EX>,
-        onError: OnError<EX, never>,
+        mustBe: DataGuarantee<T>,
+        onError: OnError,
     ) {
         // enforce the contract
         mustBe(input, onError);

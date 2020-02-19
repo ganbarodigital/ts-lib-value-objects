@@ -43,7 +43,7 @@ class ExampleEntity extends EntityObject<number, ExampleRecord> {
         return new ExampleEntity(input);
     }
 
-    public get __id__() {
+    public idOf() {
         return this.value.id;
     }
 }
@@ -53,7 +53,7 @@ describe("new Entity()", () => {
         const inputEntity: ExampleRecord = {
             id: 100,
             field1: "hello, unit test!",
-        }
+        };
         const expectedEntity = inputEntity;
 
         const unit = ExampleEntity.from(inputEntity);
@@ -68,7 +68,7 @@ describe("Entity.valueOf()", () => {
         const inputEntity: ExampleRecord = {
             id: 100,
             field1: "hello, unit test!",
-        }
+        };
         const expectedEntity = inputEntity;
 
         const unit = ExampleEntity.from(inputEntity);
@@ -78,16 +78,16 @@ describe("Entity.valueOf()", () => {
     });
 });
 
-describe("Entity.id", () => {
+describe("Entity.idOf()", () => {
     it("returns the identity of the wrapped record", () => {
         const inputEntity: ExampleRecord = {
             id: 100,
             field1: "hello, unit test!",
-        }
-        const expectedValue = 100;;
+        };
+        const expectedValue = 100;
 
         const unit = ExampleEntity.from(inputEntity);
-        const actualValue = unit.__id__;
+        const actualValue = unit.idOf();
 
         expect(actualValue).toEqual(expectedValue);
     });
@@ -98,7 +98,7 @@ describe("Entity.isEntity()", () => {
         const inputEntity: ExampleRecord = {
             id: 100,
             field1: "hello, unit test!",
-        }
+        };
         const expectedValue = true;
 
         const unit = ExampleEntity.from(inputEntity);

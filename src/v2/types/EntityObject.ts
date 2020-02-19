@@ -55,6 +55,7 @@ export abstract class EntityObject<ID, T> implements Entity<ID, T> {
      * of a call to `valueOf()`), but should never modify the data at all
      */
     protected readonly value: T;
+
     /**
      * this constructor does no contract / specification enforcement at all
      * do that in your constructor, before calling super()
@@ -62,13 +63,15 @@ export abstract class EntityObject<ID, T> implements Entity<ID, T> {
      * if you don't need to enforce a contract, your class can safely
      * create a public constructor
      */
-    protected constructor (input: T) {
+    protected constructor(input: T) {
         this.value = input;
     }
+
     /**
      * returns the ID of this entity
      */
-    abstract get __id__(): ID;
+    public abstract idOf(): ID;
+
     /**
      * returns the wrapped value
      *
@@ -78,6 +81,7 @@ export abstract class EntityObject<ID, T> implements Entity<ID, T> {
     public valueOf(): T {
         return this.value;
     }
+
     /**
      * a type-guard. It proves that an object is a wrapper around type `T`
      * that has ID `ID`.
