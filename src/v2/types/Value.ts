@@ -31,18 +31,29 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
-import { expect } from "chai";
-import { describe } from "mocha";
 
-import { Flavoured } from "./Flavoured";
+/**
+ * Value<T> describes the behaviour of data that does have a value,
+ * but does not have an identity (a primary key).
+ *
+ * It is useful for ensuring all value objects have a *minimal* set
+ * of common behaviour, whether or not they share a common base class.
+ *
+ * Use Entity<ID,T> for data that does have an identity.
+ */
+export interface Value<T> {
+    /**
+     * a type-guard.
+     *
+     * added mostly for completeness
+     */
+    isValue(): this is Value<T>;
 
-type FlavouredUuid = Flavoured<string, "uuid">;
-
-describe("v1 flavoured types", () => {
-    it("can be cast from a suitable primitive", () => {
-        const inputValue = "123e4567-e89b-12d3-a456-426655440000";
-        const actualValue = "123e4567-e89b-12d3-a456-426655440000" as FlavouredUuid;
-
-        expect(inputValue).to.equal(actualValue);
-    });
-});
+    /**
+     * returns the wrapped value
+     *
+     * for types passed by reference, we do NOT return a clone of any kind.
+     * You have to be careful not to accidentally change this value.
+     */
+    valueOf(): T;
+}

@@ -31,18 +31,30 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
-import { expect } from "chai";
-import { describe } from "mocha";
+import { AnyAppError, OnError } from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
 
-import { Flavoured } from "./Flavoured";
-
-type FlavouredUuid = Flavoured<string, "uuid">;
-
-describe("v1 flavoured types", () => {
-    it("can be cast from a suitable primitive", () => {
-        const inputValue = "123e4567-e89b-12d3-a456-426655440000";
-        const actualValue = "123e4567-e89b-12d3-a456-426655440000" as FlavouredUuid;
-
-        expect(inputValue).to.equal(actualValue);
-    });
-});
+/**
+ * A DataCoercion inspects the given data, to see if the given data
+ * meets a defined contract / specification.
+ *
+ * If the given data does meet the given contract / specification, the
+ * DataCoercion returns the given data.
+ *
+ * If the given data does not meet the given contract / specification,
+ * the DataCoercion calls the supplied OnError handler. The OnError
+ * handler can do any of the following:
+ *
+ * a) it can throw an Error (ie it never returns), or
+ * b) it can return a value that does meet the given contract / specification
+ *
+ * `T` is the type of data to be inspected
+ * `GR` is the return type of the data guarantee function
+ * - it *must* be compatible with `T` in some way
+ * - `GR` is also the return type of the supplied `OnError` handler
+ *
+ * When you implement a DataCoercion, make it a wrapper around one or more
+ * TypeGuards and/or DataGuards - and even other DataCoercions if
+ * appropriate. That's the best way to make your code as reusable as possible.
+ */
+export type DataCoercion<T, GR extends T = T>
+  = (input: T, onError: OnError<AnyAppError, GR>) => GR;

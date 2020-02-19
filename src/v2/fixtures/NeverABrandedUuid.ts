@@ -31,18 +31,51 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
-import { expect } from "chai";
-import { describe } from "mocha";
+import {
+    AppError,
+    AppErrorParams,
+    ErrorTableTemplateWithNoExtraData,
+    NoExtraDataTemplate,
+    StructuredProblemReport,
+    StructuredProblemReportDataWithNoExtraData,
+} from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
 
-import { Flavoured } from "./Flavoured";
+import { UNIT_TEST_ERROR_TABLE, UnitTestErrorTable } from "./ErrorTable";
 
-type FlavouredUuid = Flavoured<string, "uuid">;
+export type NeverABrandedUuidExtraData = NoExtraDataTemplate;
+export type NeverABrandedUuidTemplate = ErrorTableTemplateWithNoExtraData<
+    UnitTestErrorTable,
+    "never-a-branded-uuid",
+    NeverABrandedUuidExtraData
+>;
+export type NeverABrandedUuidData = StructuredProblemReportDataWithNoExtraData<
+    UnitTestErrorTable,
+    "never-a-branded-uuid",
+    NeverABrandedUuidTemplate,
+    NeverABrandedUuidExtraData
+>;
+export type NeverABrandedUuidSRP = StructuredProblemReport<
+    UnitTestErrorTable,
+    "never-a-branded-uuid",
+    NeverABrandedUuidTemplate,
+    NeverABrandedUuidExtraData,
+    NeverABrandedUuidData
+>;
 
-describe("v1 flavoured types", () => {
-    it("can be cast from a suitable primitive", () => {
-        const inputValue = "123e4567-e89b-12d3-a456-426655440000";
-        const actualValue = "123e4567-e89b-12d3-a456-426655440000" as FlavouredUuid;
+export class NeverABrandedUuidError extends AppError<
+    UnitTestErrorTable,
+    "never-a-branded-uuid",
+    NeverABrandedUuidTemplate,
+    NeverABrandedUuidExtraData,
+    NeverABrandedUuidData,
+    NeverABrandedUuidSRP
+> {
+    public constructor(params: AppErrorParams = {}) {
+        const errorData: NeverABrandedUuidData = {
+            template: UNIT_TEST_ERROR_TABLE["never-a-branded-uuid"],
+            errorId: params.errorId,
+        };
 
-        expect(inputValue).to.equal(actualValue);
-    });
-});
+        super(StructuredProblemReport.from(errorData));
+    }
+}

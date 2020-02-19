@@ -31,13 +31,19 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
-import { OnError } from "@ganbarodigital/ts-on-error/V1";
+import { AnyAppError, OnError } from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
 import { expect } from "chai";
 import { describe } from "mocha";
 
+import { NeverABrandedUuidError } from "../fixtures";
+import { NeverAFlavouredUuidError } from "../fixtures/NeverAFlavouredUuid";
 import { Branded } from "./Branded";
 import { makeRefinedTypeFactory, RefinedTypeFactory } from "./Factory";
 import { Flavoured } from "./Flavoured";
+
+function defaultErrorHandler(e: AnyAppError): never {
+    throw new Error("DEFAULT ERROR HANDLER CALLED");
+}
 
 type BrandedUuid = Branded<string, "uuid">;
 
@@ -46,14 +52,10 @@ function mustBeBrandedUuid(input: string): void {
 }
 
 function neverABrandedUuid(input: string, onError: OnError): never {
-    throw onError(Symbol("neverABrandedUuid"), "never a branded UUID", {input});
+    throw onError(new NeverABrandedUuidError());
 }
 
-type BrandedUuidFactory = RefinedTypeFactory<string, BrandedUuid, object>;
-
-function defaultOnErrorHandler(reason: symbol, description: string, extra: object): never {
-    throw new Error("DEFAULT ERROR HANDLER CALLED");
-}
+type BrandedUuidFactory = RefinedTypeFactory<string, BrandedUuid>;
 
 function brandedUuidIdentity(input: BrandedUuid): BrandedUuid {
     return input;
@@ -66,20 +68,19 @@ function mustBeFlavouredUuid(input: string): void {
 }
 
 function neverAFlavouredUuid(input: string, onError: OnError): never {
-    throw onError(Symbol("neverAFlavouredUuid"), "never a flavoured UUID", {input});
+    throw onError(new NeverAFlavouredUuidError());
 }
 
-type FlavouredUuidFactory = RefinedTypeFactory<string, FlavouredUuid, object>;
+type FlavouredUuidFactory = RefinedTypeFactory<string, FlavouredUuid>;
 
 function flavouredUuidIdentity(input: FlavouredUuid): FlavouredUuid {
     return input;
 }
 
-describe("v1 makeTypeRefinementFactory()", () => {
+describe("v2 makeTypeRefinementFactory()", () => {
     it("returns a function", () => {
         const unit: BrandedUuidFactory = makeRefinedTypeFactory(
             mustBeBrandedUuid,
-            defaultOnErrorHandler,
         );
 
         expect(unit).to.be.instanceOf(Function);
@@ -95,7 +96,6 @@ describe("v1 makeTypeRefinementFactory()", () => {
         // if there is a defect, the test will fail to compile
         const uuidFrom: BrandedUuidFactory = makeRefinedTypeFactory(
             mustBeBrandedUuid,
-            defaultOnErrorHandler,
         );
 
         const inputValue = "123e4567-e89b-12d3-a456-426655440000";
@@ -114,7 +114,6 @@ describe("v1 makeTypeRefinementFactory()", () => {
         // if there is a defect, the test will fail to compile
         const uuidFrom: FlavouredUuidFactory = makeRefinedTypeFactory(
             mustBeFlavouredUuid,
-            defaultOnErrorHandler,
         );
 
         const inputValue = "123e4567-e89b-12d3-a456-426655440000";
@@ -123,24 +122,36 @@ describe("v1 makeTypeRefinementFactory()", () => {
         expect(inputValue).to.equal(actualValue);
     });
 
-    it("creates a smart constructor that calls the default error handler when the guarantee fails", () => {
+    // tslint:disable-next-line: max-line-length
+    it("creates a smart constructor for branded types that calls the default error handler when the guarantee fails", () => {
         const uuidFrom: BrandedUuidFactory = makeRefinedTypeFactory(
             neverABrandedUuid,
-            defaultOnErrorHandler,
+            defaultErrorHandler,
         );
 
         const inputValue = "123e4567-e89b-12d3-a456-426655440000";
-        expect(() => {brandedUuidIdentity(uuidFrom(inputValue, defaultOnErrorHandler)); }).to.throw("DEFAULT ERROR HANDLER CALLED");
+        expect(() => {brandedUuidIdentity(uuidFrom(inputValue)); }).to.throw("DEFAULT ERROR HANDLER CALLED");
+    });
+
+    // tslint:disable-next-line: max-line-length
+    it("creates a smart constructor for flavoured types that calls the default error handler when the guarantee fails", () => {
+        const uuidFrom: BrandedUuidFactory = makeRefinedTypeFactory(
+            neverAFlavouredUuid,
+            defaultErrorHandler,
+        );
+
+        const inputValue = "123e4567-e89b-12d3-a456-426655440000";
+        expect(() => {brandedUuidIdentity(uuidFrom(inputValue)); }).to.throw("DEFAULT ERROR HANDLER CALLED");
     });
 
     it("creates a smart constructor that accepts an optional error handler", () => {
-        const localOnErrorHandler = (reason: symbol, description: string, extra: object): never => {
+        const localOnErrorHandler = (e: AnyAppError): never => {
             throw new Error("LOCAL ERROR HANDLER CALLED");
         };
 
         const uuidFrom: BrandedUuidFactory = makeRefinedTypeFactory(
             neverABrandedUuid,
-            localOnErrorHandler,
+            defaultErrorHandler,
         );
 
         const inputValue = "123e4567-e89b-12d3-a456-426655440000";

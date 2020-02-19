@@ -31,18 +31,20 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
-import { expect } from "chai";
-import { describe } from "mocha";
 
-import { Flavoured } from "./Flavoured";
-
-type FlavouredUuid = Flavoured<string, "uuid">;
-
-describe("v1 flavoured types", () => {
-    it("can be cast from a suitable primitive", () => {
-        const inputValue = "123e4567-e89b-12d3-a456-426655440000";
-        const actualValue = "123e4567-e89b-12d3-a456-426655440000" as FlavouredUuid;
-
-        expect(inputValue).to.equal(actualValue);
-    });
-});
+/**
+ * A DataGuard inspects a piece of data to see if the data meets a
+ * given contract / specification.
+ *
+ * If the given data does meet the contract, the function returns `true`.
+ * It returns `false` otherwise.
+ *
+ * DataGuards work best when they check for one thing, for something that
+ * can't meaningfully be broken down into multiple things.
+ *
+ * That makes them very reusable, and it allows you to build up rich
+ * error reporting in your code.
+ *
+ * `T` is the type of data to be inspected.
+ */
+export type DataGuard<T> = (input: T) => boolean;

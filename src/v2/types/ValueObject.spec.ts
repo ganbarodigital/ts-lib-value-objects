@@ -34,15 +34,48 @@
 import { expect } from "chai";
 import { describe } from "mocha";
 
-import { Flavoured } from "./Flavoured";
+import { ValueObject } from "./ValueObject";
 
-type FlavouredUuid = Flavoured<string, "uuid">;
+class ExampleValue extends ValueObject<string> {
+    public static from(input: string): ExampleValue {
+        return new ExampleValue(input);
+    }
+}
 
-describe("v1 flavoured types", () => {
-    it("can be cast from a suitable primitive", () => {
-        const inputValue = "123e4567-e89b-12d3-a456-426655440000";
-        const actualValue = "123e4567-e89b-12d3-a456-426655440000" as FlavouredUuid;
+describe("v2 Value", () => {
+    describe("constructor", () => {
+        it("stores the input inside the value object", () => {
+            const inputValue = "123e4567-e89b-12d3-a456-426655440000";
+            const expectedValue = inputValue;
 
-        expect(inputValue).to.equal(actualValue);
+            const unit = ExampleValue.from(inputValue);
+            const actualValue = unit.valueOf();
+
+            expect(actualValue).to.equal(expectedValue);
+        });
+    });
+
+    describe("valueOf()", () => {
+        it("returns the value stored inside the value object", () => {
+            const inputValue = "123e4567-e89b-12d3-a456-426655440000";
+            const expectedValue = inputValue;
+
+            const unit = ExampleValue.from(inputValue);
+            const actualValue = unit.valueOf();
+
+            expect(actualValue).to.equal(expectedValue);
+        });
+    });
+
+    describe("isValue()", () => {
+        it("returns true", () => {
+            const inputValue = "123e4567-e89b-12d3-a456-426655440000";
+            const expectedValue = true;
+
+            const unit = ExampleValue.from(inputValue);
+            const actualValue = unit.isValue();
+
+            expect(actualValue).to.equal(expectedValue);
+        });
     });
 });

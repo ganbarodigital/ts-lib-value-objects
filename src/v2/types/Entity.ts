@@ -31,18 +31,34 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
-import { expect } from "chai";
-import { describe } from "mocha";
 
-import { Flavoured } from "./Flavoured";
+/**
+ * Entity<ID, T> describes the behaviour of data that has an identity.
+ *
+ * It is useful for ensuring all entities have a *minimal* set
+ * of common behaviour, whether or not they share a common base class.
+ */
+export interface Entity<ID, T> {
+    /**
+     * this entity's identity.
+     *
+     * this is normally one (or more) fields from `T`.
+     */
+    idOf(): ID;
 
-type FlavouredUuid = Flavoured<string, "uuid">;
+    /**
+     * a type-guard. It proves that an object is a wrapper around type `T`
+     * that has ID `ID`.
+     *
+     * added mostly for completeness
+     */
+    isEntity(): this is Entity<ID, T>;
 
-describe("v1 flavoured types", () => {
-    it("can be cast from a suitable primitive", () => {
-        const inputValue = "123e4567-e89b-12d3-a456-426655440000";
-        const actualValue = "123e4567-e89b-12d3-a456-426655440000" as FlavouredUuid;
-
-        expect(inputValue).to.equal(actualValue);
-    });
-});
+    /**
+     * returns the wrapped value
+     *
+     * for types passed by reference, we do NOT return a clone of any kind.
+     * You have to be careful not to accidentally change this value.
+     */
+    valueOf(): T;
+}

@@ -38,7 +38,7 @@ import { Flavoured } from "./Flavoured";
 
 type FlavouredUuid = Flavoured<string, "uuid">;
 
-describe("v1 flavoured types", () => {
+describe("v2 flavoured types", () => {
     it("can be cast from a suitable primitive", () => {
         const inputValue = "123e4567-e89b-12d3-a456-426655440000";
         const actualValue = "123e4567-e89b-12d3-a456-426655440000" as FlavouredUuid;

@@ -4,8 +4,6 @@
 
 This TypeScript library will help you create _value objects_ and _refined types_. They will help you write safer software that also performs better.
 
-**NOTE: This README documents the `v2` API. The older `V1` API is documented [here](./src/V1/README.md)**
-
 - [Introduction](#introduction)
 - [Quick Start](#quick-start)
 - [General Concepts](#general-concepts)
@@ -19,14 +17,10 @@ This TypeScript library will help you create _value objects_ and _refined types_
 - [Value Objects](#value-objects)
   - [What Is A Value Object?](#what-is-a-value-object)
   - [How To Build Value Objects](#how-to-build-value-objects)
-  - [ValueObject.isValue()](#valueobjectisvalue)
-  - [ValueObject.valueOf()](#valueobjectvalueof)
+  - [Value.isValue()](#valueisvalue)
+  - [Value.valueOf()](#valuevalueof)
   - [Advantages Of Value Objects](#advantages-of-value-objects)
   - [Disadvantages Of Value Objects](#disadvantages-of-value-objects)
-- [Entities and EntityObjects](#entities-and-entityobjects)
-  - [What Is An Entity?](#what-is-an-entity)
-  - [How Does An Entity Differ From A Value?](#how-does-an-entity-differ-from-a-value)
-  - [How To Build Entities](#how-to-build-entities)
 - [Refined Types](#refined-types)
   - [What Is A Refined Type?](#what-is-a-refined-type)
   - [What Is Type Refinement?](#what-is-type-refinement)
@@ -39,7 +33,6 @@ This TypeScript library will help you create _value objects_ and _refined types_
   - [Disadvantages Of Refined Types](#disadvantages-of-refined-types)
 - [Refined Types As Value Objects](#refined-types-as-value-objects)
   - [RefinedString and RefinedNumber Classes](#refinedstring-and-refinednumber-classes)
-- [Converting From `V1` API To `v2` API](#converting-from-v1-api-to-v2-api)
 - [NPM Scripts](#npm-scripts)
   - [npm run clean](#npm-run-clean)
   - [npm run build](#npm-run-build)
@@ -55,7 +48,7 @@ npm install @ganbarodigital/ts-lib-value-objects
 
 ```typescript
 // add this import to your Typescript code
-import { RefinedString } from "@ganbarodigital/ts-lib-value-objects/lib/v2"
+import { RefinedString } from "@ganbarodigital/ts-lib-value-objects/V1"
 ```
 
 __VS Code users:__ once you've added a single import anywhere in your project, you'll then be able to auto-import anything else that this library exports.
@@ -167,7 +160,7 @@ export type TypeGuard<T> = (input: unknown) => input is T;
 A _type guard_ is a function that tells the TypeScript compiler to treat a value as a given type.
 
 ```typescript
-import { TypeGuard } from "@ganbarodigital/ts-lib-value-objects/lib/v2";
+import { TypeGuard } from "@ganbarodigital/ts-lib-value-objects/V1";
 
 const isUuidType: TypeGuard<Uuid> = (input: unknown): input is Uuid => {
     if (input instanceof Uuid) {
@@ -220,7 +213,7 @@ A _data guard_ is a function. It inspects the given data, and returns `true` if 
 Data guards are an example of a _contract_ or _specification_, depending on what programming paradigm you subscribe to :)
 
 ```typescript
-import { DataGuard } from "@ganbarodigital/ts-lib-value-objects/lib/v2";
+import { DataGuard } from "@ganbarodigital/ts-lib-value-objects/V1";
 
 const UuidRegex = new RegExp("^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$", "i");
 
@@ -249,13 +242,14 @@ Notes:
  * handler must throw an Error of some kind.
  *
  * `T` is the type of data to be inspected
+ * `EX` is the type of information passed to the OnError handler
  *
  * When you implement a DataGuarantee, make it a wrapper around one or more
  * TypeGuards and/or DataGuards - and even other DataGuarantees if
  * appropriate. That's the best way to make your code as reusable as possible.
  */
-export type DataGuarantee<T>
-  = (input: T, onError: OnError) => void;
+export type DataGuarantee<T, EX = object>
+  = (input: T, onError: OnError<EX, never>) => void;
 ```
 
 A _data guarantee_ is a function. It enforces a _contract_ or _specification_. It calls one or more _data guards_ to inspect the given input, and if the input doesn't meet the contract / specification, it calls the supplied `OnError` handler.
@@ -263,15 +257,15 @@ A _data guarantee_ is a function. It enforces a _contract_ or _specification_. I
 The `OnError` handler decides which `Error` to throw. If it is called, the `OnError` handler _always_ throws an `Error` of some kind.
 
 ```typescript
-import { OnError } from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
-import { DataGuarantee } from "@ganbarodigital/ts-lib-value-objects/lib/v2";
+import { OnError } from "@ganbarodigital/ts-on-error/V1";
+import { DataGuarantee } from "@ganbarodigital/ts-lib-value-objects/V1";
 
 const invalidUuid = Symbol("invalidUuid");
 
 const mustBeUuidData: DataGuarantee<string> = (input: string, onError: OnError): void => {
     // does the string contain a well-formatted UUID?
     if (!isUuidData(input)) {
-        onError(new InvalidUuidError({public: {input}}));
+        onError(invalidUuid, "input is not a well-formatted UUID", {input: input});
     }
 
     // if we get here, all is well
@@ -287,11 +281,11 @@ There's a lot going on here. Let's break it down:
 Data guarantees get used in so-called _smart constructors_:
 
 ```typescript
-import { OnError } from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
-import { ValueObject } from "@ganbarodigital/ts-lib-value-objects/lib/v2";
+import { OnError } from "@ganbarodigital/ts-on-error";
+import { Value } from "@ganbarodigital/ts-lib-value-objects";
 
 // this is the value object approach
-class Uuid extends ValueObject {
+class Uuid extends Value {
     // `from()` is our smart constructor
     public static from(input: string, onError?: OnError): Uuid {
         // make sure we have an error handler
@@ -313,8 +307,8 @@ let uuid = Uuid.from("123e4567-e89b-12d3-a456-426655440000");
 ```
 
 ```typescript
-import { OnError } from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
-import { Branded, makeRefinedTypeFactory } from "@ganbarodigital/ts-lib-value-objects/lib/v2";
+import { OnError } from "@ganbarodigital/ts-on-error";
+import { Branded, makeRefinedTypeFactory } from "@ganbarodigital/ts-lib-value-objects";
 
 // this is an example of "type refinement", using a "branded" string
 type Uuid = Branded<string, "uuid">;
@@ -354,16 +348,17 @@ let uuid = uuidFrom("123e4567-e89b-12d3-a456-426655440000");
  * b) it can return a value that does meet the given contract / specification
  *
  * `T` is the type of data to be inspected
+ * - `T` is also the return type of the supplied `OnError` handler
  * `GR` is the return type of the data guarantee function
  * - it *must* be compatible with `T` in some way
- * - `GR` is also the return type of the supplied `OnError` handler
+ * `EX` is the type of information passed to the OnError handler
  *
  * When you implement a DataCoercion, make it a wrapper around one or more
  * TypeGuards and/or DataGuards - and even other DataCoercions if
  * appropriate. That's the best way to make your code as reusable as possible.
  */
-export type DataCoercion<T, GR extends T = T>
-  = (input: T, onError: OnError<AnyAppError, GR>) => GR;
+export type DataCoercion<T, GR extends T, EX = object>
+  = (input: T, onError: OnError<EX, T>) => GR;
 ```
 
 A _data coercion_ is a function. It enforces a _contract_ or _specification_. It inspects the given input, and if the input doesn't meet the contract / specification, it calls the supplied `OnError` handler. (So far, that's exactly the same as a _data guarantee_.)
@@ -374,15 +369,17 @@ The `OnError` handler can do one of two things:
 - it can throw an `Error` of some kind (just like an `OnError` handler for a _data guarantee_)
 
 ```typescript
-import { AnyAppError, OnError } from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
-import { DataCoercion } from "@ganbarodigital/ts-lib-value-objects/lib/v2";
+import { OnError } from "@ganbarodigital/ts-on-error/V1";
+import { DataCoercion } from "@ganbarodigital/ts-lib-value-objects/V1";
 
-const mustBeUuidData: DataCoercion<string> = (input: string, onError: OnError<AnyAppError, string|never>): string => {
+const invalidUuid = Symbol("invalidUuid");
+
+const mustBeUuidData: DataCoercion<string> = (input: string, onError: OnError): string => {
     // does `input` contain a well-formatted UUID?
     // if it doesn't, our onError handler has the opportunity to return
     // something that is correct
     if (!isUuidData(input)) {
-        input = onError(new InvalidUuidError({public: {input}});
+        input = onError(invalidUuid, "input is not a well-formatted UUID", {input: input});
     }
 
     // if we get here, all is well
@@ -407,21 +404,18 @@ A _value object_ is:
 
 ```typescript
 /**
- * Value<T> describes the behaviour of data that does have a value,
- * but does not have an identity (a primary key).
+ * ValueObject<T> describes the behaviour of data that does have a value.
  *
  * It is useful for ensuring all value objects have a *minimal* set
  * of common behaviour, whether or not they share a common base class.
- *
- * Use Entity<ID,T> for data that does have an identity.
  */
-export interface Value<T> {
+export interface ValueObject<T> {
     /**
      * a type-guard.
      *
      * added mostly for completeness
      */
-    isValue(): this is Value<T>;
+    isValue(): this is ValueObject<T>;
 
     /**
      * returns the wrapped value
@@ -433,8 +427,7 @@ export interface Value<T> {
 }
 
 /**
- * ValueObject<T> is the base class for defining your Value Object
- * hierarchies.
+ * Value<T> is the base class for defining your Value Object hierarchies.
  *
  * Every Value Object:
  *
@@ -446,10 +439,8 @@ export interface Value<T> {
  *
  * If you do want fully-functional programming, use one of the many
  * excellent libraries that are out there instead.
- *
- * Use EntityObject<ID,T> for data that has an identity (a primary key).
  */
-export class ValueObject<T> implements Value<T> {
+export class Value<T> implements ValueObject<T> {
     /**
      * this is the data that we wrap
      *
@@ -484,7 +475,7 @@ export class ValueObject<T> implements Value<T> {
      *
      * added mostly for completeness
      */
-    public isValue(): this is Value<T> {
+    public isValue(): this is ValueObject<T> {
         return true;
     }
 }
@@ -505,28 +496,30 @@ export function isUuidData(input: string): boolean {
 Define a _data guarantee_ that uses your _data guard(s)_:
 
 ```typescript
-import { OnError } from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
+import { OnError } from "@ganbarodigital/ts-on-error/V1";
+
+export const InvalidUuidError = Symbol("invalid UUID");
 
 export function mustBeUuidData(input: string, onError: OnError): void {
     if (isUuidData(input)) {
         return true;
     }
 
-    return onError(new InvalidUuidError({public: { input}});
+    return onError(InvalidUuidError, "input is not a valid UUID", { input: input });
 }
 ```
 
 Define a class that:
 
-* extends `ValueObject`, and
+* extends `Value`, and
 * has a _smart constructor_
 
 ```typescript
-import { OnError, THROW_THE_ERROR } from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
-import { ValueObject } from "@ganbarodigital/ts-lib-value-objects/lib/v2";
+import { OnError } from "@ganbarodigital/ts-on-error/V1";
+import { Value } from "@ganbarodigital/ts-lib-value-objects/V1";
 
-class Uuid extends ValueObject<string> {
-    public static from(input: string, onError: OnError = THROW_THE_ERROR): Uuid {
+class Uuid extends Value<string> {
+    public static from(input: string, onError: OnError): Uuid {
         // enforce the contract / specification!
         mustBeUuidData(input, onError);
 
@@ -553,29 +546,29 @@ function uuidToBytes(uuid: Uuid): Buffer {
 }
 ```
 
-### ValueObject.isValue()
+### Value.isValue()
 
 Every value object comes with a `isValue()` method:
 
 ```typescript
-class ValueObject {
+class Value {
     /**
      * a type-guard.
      *
      * added mostly for completeness
      */
-    isValue(): this is Value<T>;
+    isValue(): this is ValueObject<T>;
 }
 ```
 
 Honestly, I can't think of an example of where you'd need to call it. It's there if you ever need it!
 
-### ValueObject.valueOf()
+### Value.valueOf()
 
 Every value object comes with a `valueOf()` method:
 
 ```typescript
-class ValueObject {
+class Value {
     /**
      * returns the wrapped value
      *
@@ -614,91 +607,6 @@ In no particular order ...
 * Value objects perform worse than refined types.
 * Value objects take up more RAM at runtime than refined types.
 * TypeScript v3.7.x (the latest at the time of writing) doesn't correctly support JavaScript's object-to-primitive auto-conversion mechanisms. If you're wrapping a `number`, you might prefer doing that as a _refined type_.
-
-## Entities and EntityObjects
-
-### What Is An Entity?
-
-An _entity_ is a value that has some form of identity. For example, database records that have primary keys are _entities_.
-
-```typescript
-/**
- * Entity<ID, T> describes the behaviour of data that has an identity.
- *
- * It is useful for ensuring all entities have a *minimal* set
- * of common behaviour, whether or not they share a common base class.
- */
-export interface Entity<ID, T> {
-    /**
-     * this entity's identity.
-     *
-     * this is normally one (or more) fields from `T`.
-     */
-    idOf(): ID;
-
-    /**
-     * a type-guard. It proves that an object is a wrapper around type `T`
-     * that has ID `ID`.
-     *
-     * added mostly for completeness
-     */
-    isEntity(): this is Entity<ID, T>;
-
-    /**
-     * returns the wrapped value
-     *
-     * for types passed by reference, we do NOT return a clone of any kind.
-     * You have to be careful not to accidentally change this value.
-     */
-    valueOf(): T;
-}
-```
-
-### How Does An Entity Differ From A Value?
-
-They're very similar, in practice.
-
-* Both are wrappers around a value.
-* Both provide _smart constructors_ to make sure that they don't contain illegal values.
-* Both implement `valueOf()` to get at that wrapped value.
-* Both can implement individual `get` accessors to provide access to individual parts of the wrapped value.
-* They share the same advantages and disadvantages compared to _refined types_.
-
-The main difference is that an `Entity` provides a readonly property called `__id__` too. `__id__` will always be the identity of the `Entity`. For example, in a database record, `__id__` will always return the primary key.
-
-### How To Build Entities
-
-The process is almost the same as [building a value object](#how-to-build-value-objects).
-
-* Define one (or more) _data guards_.
-* Define a _data guarantee_ that uses your _data guard(s)_.
-* Define an interface (which we'll call `T`) to represent whatever record will be stored in the Entity object.
-* Define a type (or re-use an existing type) to represent the identity of your entity.
-* Define a class that:
-  - extends `EntityObject`,
-  - has a _smart constructor_,
-  - has a `idOf()` function,
-  - (maybe) has _get accessors_ for the individual members of your type `T`
-
-```typescript
-import { OnError, THROW_THE_ERROR } from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
-import { EntityObject } from "@ganbarodigital/ts-lib-value-objects/lib/v2";
-
-class ExampleEntity extends EntityObject<ID, T> {
-    public static from(input, T: onError: OnError = THROW_THE_ERROR): ExampleEntity {
-        // call your smart constructor here
-        mustBeExample(input, onError);
-
-        return new ExampleEntity(input);
-    }
-
-    public idOf(): ID {
-        // replace `primaryKey` with whatever field(s) form the identity
-        // of your entity
-        return input.primaryKey;
-    }
-}
-```
 
 ## Refined Types
 
@@ -746,34 +654,36 @@ export function isUuidData(input: string): boolean {
 Define a _data guarantee_:
 
 ```typescript
-import { OnError } from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
+import { OnError } from "@ganbarodigital/ts-on-error/V1";
+
+export const InvalidUuidError = Symbol("invalid UUID");
 
 export function mustBeUuidData(input: string, onError: OnError): void {
     if (isUuidData(input)) {
         return true;
     }
 
-    return onError(new InvalidUuidError({public: { input }}));
+    return onError(InvalidUuidError, "input is not a valid UUID", { input: input });
 }
 ```
 
 Define a _default onError handler_:
 
 ```typescript
-export function throwInvalidUuidError(e: AnyAppError): never {
-    throw e;
+export function throwInvalidUuidError(reason: symbol, description: string, extra: object): never {
+    throw new Error(description);
 }
 ```
 
 Define a _branded type_ and _smart constructor_:
 
 ```typescript
-import { OnError } from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
+import { OnError } from "@ganbarodigital/ts-on-error/V1";
 import {
     Branded,
     RefinedTypeFactory,
     makeRefinedTypeFactory,
-} from "@ganbarodigital/ts-lib-value-objects/lib/v2";
+} from "@ganbarodigital/ts-lib-value-objects/V1";
 
 // this is our branded type
 type Uuid = Branded<string, "uuid">;
@@ -782,7 +692,7 @@ type Uuid = Branded<string, "uuid">;
 //
 // as of v3.7, it cannot work out by itself that our
 // `uuidFrom()` function below returns a `Uuid`
-type UuidFactory = RefinedTypeFactory<string, Uuid>;
+type UuidFactory = RefinedTypeFactory<string, Uuid, object>;
 
 // this is our smart constructor
 const uuidFrom: UuidFactory = makeRefinedTypeFactory<string, Uuid>(
@@ -816,7 +726,7 @@ function uuidToBytes(uuid: Uuid): Buffer {
 There's only one difference between _flavoured types_ and _branded types_: you can assign a compatible primitive to a _flavoured type_.
 
 ```typescript
-import { Flavoured } from "@ganbarodigital/ts-lib-value-objects/lib/v2";
+import { Flavoured } from "@ganbarodigital/ts-lib-value-objects/V1";
 
 type Uuid = Flavoured<string, "uuid">;
 
@@ -834,7 +744,7 @@ _Branded types_ and _flavoured types_ don't give you the same level of type safe
 Unfortunately, **TypeScript won't tell you if you mix these types in an operation:**
 
 ```typescript
-import { Branded } from "@ganbarodigital/ts-lib-value-objects/lib/v2";
+import { Branded } from "@ganbarodigital/ts-lib-value-objects/V1";
 
 type Inches = Branded<number, "inches">;
 type Centimetres = Branded<number, "centimetres">;
@@ -849,7 +759,7 @@ const c = a + b;
 To use _branded types_ and _flavoured types_ safely, make sure that you wrap any operations in a function:
 
 ```typescript
-import { Branded } from "@ganbarodigital/ts-lib-value-objects/lib/v2";
+import { Branded } from "@ganbarodigital/ts-lib-value-objects/V1";
 
 type Inches = Branded<number, "inches">;
 type Centimetres = Branded<number, "centimetres">;
@@ -874,7 +784,7 @@ const c = sum(b, a);
 `makeRefinedTypeFactory()` builds your _smart constructor_ for you.
 
 ```typescript
-export type RefinedTypeFactory<BI, BR> = (input: BI, onError?: OnError) => BR;
+export type RefinedTypeFactory<BI, BR, EX> = (input: BI, onError?: OnError<EX, never>) => BR;
 
 /**
  * makeRefinedTypeFactory creates factories for your branded and
@@ -892,6 +802,8 @@ export type RefinedTypeFactory<BI, BR> = (input: BI, onError?: OnError) => BR;
  *
  * `BI` is the input type that your factory accepts (e.g. `string`)
  * `BR` is the type that your factory returns
+ * `EX` is the type of extra information that the `OnError` handlers
+ *      will accept
  *
  * @param mustBe
  *        this will be called every time you use the function that we return.
@@ -901,10 +813,10 @@ export type RefinedTypeFactory<BI, BR> = (input: BI, onError?: OnError) => BR;
  *        If the caller doesn't provide an `onError` parameter, the function
  *        will call this error handler instead.
  */
-export const makeRefinedTypeFactory = <BI, BR>(
-    mustBe: DataGuarantee<BI>,
-    defaultOnError: OnError,
-): RefinedTypeFactory<BI, BR>
+export const makeRefinedTypeFactory = <BI, BR, EX>(
+    mustBe: DataGuarantee<BI, EX>,
+    defaultOnError: OnError<EX, never>,
+): RefinedTypeFactory<BI, BR, EX>
 ```
 
 You pass in your _data guarantee_ and a default `OnError` handler, and `makeRefinedTypeFactory()` returns a function that you can use as a _smart constructor_.
@@ -939,13 +851,13 @@ If you want to create refined types that are still full-blown [value objects](#v
 
 `RefinedString` and `RefinedNumber` are two classes we export for you. They're identical, except that one is for wrapping a `string`, and the other is for wrapping a `number`.
 
-Both classes extend the [ValueObject](#value-objects) class documented earlier. They also add some additional methods to help Javascript auto-convert to a primitive in some circumstances (for example, writing to the `console.log()`).
+Both classes extend the [Value](#value-objects) class documented earlier. They also add some additional methods to help Javascript auto-convert to a primitive in some circumstances (for example, writing to the `console.log()`).
 
 Here's an example of how to create a `Uuid` value object type, using the `RefinedString` class.
 
 ```typescript
-import { RefinedString } from "@ganbarodigital/ts-lib-value-objects/lib/v2";
-import { OnError, THROW_THE_ERROR } from "@ganbarodigital/ts-error-reporting/lib/v1";
+import { RefinedString } from "@ganbarodigital/ts-lib-value-objects/V1";
+import { OnError } from "@ganbarodigital/ts-on-error/V1";
 
 const UuidRegex = new RegExp("^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$", "i");
 
@@ -954,19 +866,29 @@ export function isUuidData(input: string): boolean {
     return UuidRegex.test(input);
 }
 
+export const InvalidUuidError = Symbol("invalid UUID");
+
 // it is good practice to define a standalone data guarantee
 export function mustBeUuid(input: string, onError: OnError): void {
     if (isUuidData(input)) {
         return true;
     }
 
-    return onError(new InvalidUuidError({ public: { input } }));
+    return onError(InvalidUuidError, "input is not a valid UUID", { input: input });
+}
+
+// it is good practice to define a default onError handler
+export function throwInvalidUuidError(reason: symbol, description: string, extra: object): never {
+    throw new Error(description);
 }
 
 class Uuid extends RefinedString {
-    public static from(input: string, onError?: OnError = THROW_THE_ERROR): Uuid {
+    public static from(input: string, onError?: OnError): Uuid {
+        // make sure we have an onError handler
+        onError = onError ?? throwInvalidUuidError;
+
         // the parent constructor will handle everything for us
-        super(input, mustBeUuid, onError);
+        super(input, mustBeUuid, throwInvalidUuidError);
     }
 }
 ```
@@ -976,15 +898,6 @@ Notes:
 * At the time of writing (TypeScript v3.7.x), TypeScript doesn't understand / support auto-conversion of objects to numbers, even though it is valid JavaScript. See [TypeScript issue 2031](https://github.com/microsoft/TypeScript/issues/2031) for where the bug was introduced, [TypeScript issue 4538](https://github.com/microsoft/TypeScript/issues/4538) for the main bug report, and [TypeScript issue 2361](https://github.com/microsoft/TypeScript/issues/2361) for where (we hope) work on the fix is being tracked.
 
     Until this TypeScript bug is fixed, you're probably better off using a [refined type](#refined-types) for numbers, instead of value objects.
-
-## Converting From `V1` API To `v2` API
-
-Got existing code that uses the `V1` API? Here's the steps that you need to take, to switch over to the `v2` API:
-
-* Search/replace `ts-lib-value-objects/V1` to be `ts-lib-value-objects/lib/v2`
-* Any value objects must now implement the `Value` interface. It was called `ValueObject` in the `V1` API.
-* Any value objects must now extend the `ValueObject` base class. It was called `Value` in the `v1` API.
-* Switch your error handlers to use `@ganbarodigital/ts-lib-error-reporting`.
 
 ## NPM Scripts
 

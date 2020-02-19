@@ -31,11 +31,12 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
-import { OnError } from "@ganbarodigital/ts-on-error/V1";
+import { AnyAppError, OnError } from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
 import { expect } from "chai";
 import { describe } from "mocha";
 
-import { Value } from "../types/Value";
+import { NeverABrandedUuidError } from "../fixtures";
+import { ValueObject } from "../types/ValueObject";
 import { RefinedString } from "./RefinedString";
 
 function mustBeUuid(input: string): void {
@@ -43,10 +44,10 @@ function mustBeUuid(input: string): void {
 }
 
 function neverAUuid(input: string, onError: OnError): never {
-    throw onError(Symbol("neverAUuid"), "never a UUID", {input});
+    throw onError(new NeverABrandedUuidError());
 }
 
-function defaultOnErrorHandler(reason: symbol, description: string, extra: object): never {
+function defaultOnErrorHandler(e: AnyAppError): never {
     throw new Error("DEFAULT ERROR HANDLER CALLED");
 }
 
@@ -63,12 +64,12 @@ class NeverUuid extends RefinedString {
     }
 }
 
-describe("v1 RefinedString", () => {
+describe("v2 RefinedString", () => {
     it("is a value object", () => {
         const inputValue = "123e4567-e89b-12d3-a456-426655440000";
         const actualValue = Uuid.from(inputValue);
 
-        expect(actualValue).to.be.instanceOf(Value);
+        expect(actualValue).to.be.instanceOf(ValueObject);
         expect(actualValue.valueOf()).to.equal(inputValue);
         expect(actualValue.isValue()).to.equal(true);
     });

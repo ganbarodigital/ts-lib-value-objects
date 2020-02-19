@@ -21,6 +21,25 @@ For each release, changes are grouped under these headings:
 
 The following changes have been completed, and will be included in the next tagged release.
 
+## v1.1.0
+
+Released Wednesday, 19th February 2020.
+
+### Backwards-Compatibility Breaks
+
+We've introduced a `v2` API, to correct some mistakes we made in the design of the `V1` API.
+
+* The `ValueObject` interface is now called `Value`
+* The `Value` class is now called `ValueObject`
+* `OnError` callbacks now use the `ts-lib-error-reporting` format
+
+The old `V1` API remains available too, inside this package. It'll get bug fixes, but otherwise is frozen.
+
+### New
+
+* Added `Entity` interface to v2 API
+* Added `EntityObject` to v2 API
+
 ## v1.0.1
 
 Released Sunday, 2nd February 2020.

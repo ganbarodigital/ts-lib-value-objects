@@ -31,18 +31,59 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
-import { expect } from "chai";
-import { describe } from "mocha";
+import {
+    AppError,
+    AppErrorParams,
+    ErrorTableTemplateWithExtraData,
+    ExtraPublicData,
+    StructuredProblemReport,
+    StructuredProblemReportDataWithExtraData,
+} from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
 
-import { Flavoured } from "./Flavoured";
+import { UNIT_TEST_ERROR_TABLE, UnitTestErrorTable } from "./ErrorTable";
 
-type FlavouredUuid = Flavoured<string, "uuid">;
+export interface NeverAdultAgeExtraData extends ExtraPublicData {
+    public: {
+        input: number;
+    };
+}
 
-describe("v1 flavoured types", () => {
-    it("can be cast from a suitable primitive", () => {
-        const inputValue = "123e4567-e89b-12d3-a456-426655440000";
-        const actualValue = "123e4567-e89b-12d3-a456-426655440000" as FlavouredUuid;
+export type NeverAdultAgeTemplate = ErrorTableTemplateWithExtraData<
+    UnitTestErrorTable,
+    "never-adult-age",
+    NeverAdultAgeExtraData
+>;
+export type NeverAdultAgeData = StructuredProblemReportDataWithExtraData<
+    UnitTestErrorTable,
+    "never-adult-age",
+    NeverAdultAgeTemplate,
+    NeverAdultAgeExtraData
+>;
+export type NeverAdultAgeSRP = StructuredProblemReport<
+    UnitTestErrorTable,
+    "never-adult-age",
+    NeverAdultAgeTemplate,
+    NeverAdultAgeExtraData,
+    NeverAdultAgeData
+>;
 
-        expect(inputValue).to.equal(actualValue);
-    });
-});
+export class NeverAdultAgeError extends AppError<
+    UnitTestErrorTable,
+    "never-adult-age",
+    NeverAdultAgeTemplate,
+    NeverAdultAgeExtraData,
+    NeverAdultAgeData,
+    NeverAdultAgeSRP
+> {
+    public constructor(params: AppErrorParams & NeverAdultAgeExtraData) {
+        const errorData: NeverAdultAgeData = {
+            template: UNIT_TEST_ERROR_TABLE["never-adult-age"],
+            errorId: params.errorId,
+            extra: {
+                public: params.public,
+            },
+        };
+
+        super(StructuredProblemReport.from(errorData));
+    }
+}

@@ -31,18 +31,22 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
-import { expect } from "chai";
-import { describe } from "mocha";
+import { RefinedPrimitive } from "./RefinedPrimitive";
 
-import { Flavoured } from "./Flavoured";
+/**
+ * RefinedNumber is a base class for defining a subset of numbers.
+ * The subset is defined by a contract / specification, and enforced
+ * by a DataGuarantee.
+ *
+ * The DataGuarantee and OnError handler are passed into the base class's
+ * constructor().
+ */
+export class RefinedNumber extends RefinedPrimitive<number> {
+    public [Symbol.toPrimitive](hint: string): string|number {
+        if (hint === "string") {
+            return this.value.toString();
+        }
 
-type FlavouredUuid = Flavoured<string, "uuid">;
-
-describe("v1 flavoured types", () => {
-    it("can be cast from a suitable primitive", () => {
-        const inputValue = "123e4567-e89b-12d3-a456-426655440000";
-        const actualValue = "123e4567-e89b-12d3-a456-426655440000" as FlavouredUuid;
-
-        expect(inputValue).to.equal(actualValue);
-    });
-});
+        return this.value;
+    }
+}

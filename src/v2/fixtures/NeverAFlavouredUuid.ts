@@ -31,18 +31,51 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
-import { expect } from "chai";
-import { describe } from "mocha";
+import {
+    AppError,
+    AppErrorParams,
+    ErrorTableTemplateWithNoExtraData,
+    NoExtraDataTemplate,
+    StructuredProblemReport,
+    StructuredProblemReportDataWithNoExtraData,
+} from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
 
-import { Flavoured } from "./Flavoured";
+import { UNIT_TEST_ERROR_TABLE, UnitTestErrorTable } from "./ErrorTable";
 
-type FlavouredUuid = Flavoured<string, "uuid">;
+export type NeverAFlavouredUuidExtraData = NoExtraDataTemplate;
+export type NeverAFlavouredUuidTemplate = ErrorTableTemplateWithNoExtraData<
+    UnitTestErrorTable,
+    "never-a-flavoured-uuid",
+    NeverAFlavouredUuidExtraData
+>;
+export type NeverAFlavouredUuidData = StructuredProblemReportDataWithNoExtraData<
+    UnitTestErrorTable,
+    "never-a-flavoured-uuid",
+    NeverAFlavouredUuidTemplate,
+    NeverAFlavouredUuidExtraData
+>;
+export type NeverAFlavouredUuidSRP = StructuredProblemReport<
+    UnitTestErrorTable,
+    "never-a-flavoured-uuid",
+    NeverAFlavouredUuidTemplate,
+    NeverAFlavouredUuidExtraData,
+    NeverAFlavouredUuidData
+>;
 
-describe("v1 flavoured types", () => {
-    it("can be cast from a suitable primitive", () => {
-        const inputValue = "123e4567-e89b-12d3-a456-426655440000";
-        const actualValue = "123e4567-e89b-12d3-a456-426655440000" as FlavouredUuid;
+export class NeverAFlavouredUuidError extends AppError<
+    UnitTestErrorTable,
+    "never-a-flavoured-uuid",
+    NeverAFlavouredUuidTemplate,
+    NeverAFlavouredUuidExtraData,
+    NeverAFlavouredUuidData,
+    NeverAFlavouredUuidSRP
+> {
+    public constructor(params: AppErrorParams = {}) {
+        const errorData: NeverAFlavouredUuidData = {
+            template: UNIT_TEST_ERROR_TABLE["never-a-flavoured-uuid"],
+            errorId: params.errorId,
+        };
 
-        expect(inputValue).to.equal(actualValue);
-    });
-});
+        super(StructuredProblemReport.from(errorData));
+    }
+}

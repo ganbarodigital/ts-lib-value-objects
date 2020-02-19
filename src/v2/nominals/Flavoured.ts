@@ -31,18 +31,11 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
-import { expect } from "chai";
-import { describe } from "mocha";
 
-import { Flavoured } from "./Flavoured";
+// the idea of flavouring came from this blog post:
+//
+// https://spin.atomicobject.com/2018/01/15/typescript-flexible-nominal-typing/
+//
+export type Flavoured<T, FlavourT extends string> = T & { _type?: FlavourT };
 
-type FlavouredUuid = Flavoured<string, "uuid">;
-
-describe("v1 flavoured types", () => {
-    it("can be cast from a suitable primitive", () => {
-        const inputValue = "123e4567-e89b-12d3-a456-426655440000";
-        const actualValue = "123e4567-e89b-12d3-a456-426655440000" as FlavouredUuid;
-
-        expect(inputValue).to.equal(actualValue);
-    });
-});
+export type AnyFlavoured = Flavoured<any, any>;

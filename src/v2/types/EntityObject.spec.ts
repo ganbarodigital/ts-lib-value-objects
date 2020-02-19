@@ -34,46 +34,79 @@
 import { expect } from "chai";
 import { describe } from "mocha";
 
-import { Value } from "./Value";
+import { EntityObject } from "./EntityObject";
 
-class ExampleValue extends Value<string> {
-    public static from(input: string): ExampleValue {
-        return new ExampleValue(input);
+interface ExampleRecord {
+    id: number;
+    field1: string;
+}
+
+class ExampleEntity extends EntityObject<number, ExampleRecord> {
+    public static from(input: ExampleRecord): ExampleEntity {
+        return new ExampleEntity(input);
+    }
+
+    public idOf() {
+        return this.value.id;
     }
 }
 
-describe("v1 Value", () => {
+describe("v2 Entity", () => {
     describe("constructor", () => {
-        it("stores the input inside the value object", () => {
-            const inputValue = "123e4567-e89b-12d3-a456-426655440000";
-            const expectedValue = inputValue;
+        it("stores the input inside the Entity object", () => {
+            const inputEntity: ExampleRecord = {
+                id: 100,
+                field1: "hello, unit test!",
+            };
+            const expectedEntity = inputEntity;
 
-            const unit = ExampleValue.from(inputValue);
-            const actualValue = unit.valueOf();
+            const unit = ExampleEntity.from(inputEntity);
+            const actualEntity = unit.valueOf();
 
-            expect(actualValue).to.equal(expectedValue);
+            expect(actualEntity).to.equal(expectedEntity);
         });
     });
 
     describe(".valueOf()", () => {
-        it("returns the value stored inside the value object", () => {
-            const inputValue = "123e4567-e89b-12d3-a456-426655440000";
-            const expectedValue = inputValue;
+        it("returns the Entity stored inside the Entity object", () => {
+            const inputEntity: ExampleRecord = {
+                id: 100,
+                field1: "hello, unit test!",
+            };
+            const expectedEntity = inputEntity;
 
-            const unit = ExampleValue.from(inputValue);
-            const actualValue = unit.valueOf();
+            const unit = ExampleEntity.from(inputEntity);
+            const actualEntity = unit.valueOf();
+
+            expect(actualEntity).to.equal(expectedEntity);
+        });
+    });
+
+    describe(".idOf()", () => {
+        it("returns the identity of the wrapped record", () => {
+            const inputEntity: ExampleRecord = {
+                id: 100,
+                field1: "hello, unit test!",
+            };
+            const expectedValue = 100;
+
+            const unit = ExampleEntity.from(inputEntity);
+            const actualValue = unit.idOf();
 
             expect(actualValue).to.equal(expectedValue);
         });
     });
 
-    describe(".isValue()", () => {
+    describe(".isEntity()", () => {
         it("returns true", () => {
-            const inputValue = "123e4567-e89b-12d3-a456-426655440000";
+            const inputEntity: ExampleRecord = {
+                id: 100,
+                field1: "hello, unit test!",
+            };
             const expectedValue = true;
 
-            const unit = ExampleValue.from(inputValue);
-            const actualValue = unit.isValue();
+            const unit = ExampleEntity.from(inputEntity);
+            const actualValue = unit.isEntity();
 
             expect(actualValue).to.equal(expectedValue);
         });

@@ -31,18 +31,24 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
-import { expect } from "chai";
-import { describe } from "mocha";
+import { OnError } from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
 
-import { Flavoured } from "./Flavoured";
-
-type FlavouredUuid = Flavoured<string, "uuid">;
-
-describe("v1 flavoured types", () => {
-    it("can be cast from a suitable primitive", () => {
-        const inputValue = "123e4567-e89b-12d3-a456-426655440000";
-        const actualValue = "123e4567-e89b-12d3-a456-426655440000" as FlavouredUuid;
-
-        expect(inputValue).to.equal(actualValue);
-    });
-});
+/**
+ * A DataGuarantee inspects the given data, to see if the given data
+ * meets a defined contract / specification.
+ *
+ * If the given data does meet the given contract / specification, the
+ * DataGuarantee returns the given data.
+ *
+ * If the given data does not meet the given contract / specification,
+ * the DataGuarantee calls the supplied OnError handler. The OnError
+ * handler must throw an Error of some kind.
+ *
+ * `T` is the type of data to be inspected
+ *
+ * When you implement a DataGuarantee, make it a wrapper around one or more
+ * TypeGuards and/or DataGuards - and even other DataGuarantees if
+ * appropriate. That's the best way to make your code as reusable as possible.
+ */
+export type DataGuarantee<T>
+  = (input: T, onError: OnError) => void;

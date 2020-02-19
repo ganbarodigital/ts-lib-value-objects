@@ -31,18 +31,16 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
-import { expect } from "chai";
-import { describe } from "mocha";
 
-import { Flavoured } from "./Flavoured";
-
-type FlavouredUuid = Flavoured<string, "uuid">;
-
-describe("v1 flavoured types", () => {
-    it("can be cast from a suitable primitive", () => {
-        const inputValue = "123e4567-e89b-12d3-a456-426655440000";
-        const actualValue = "123e4567-e89b-12d3-a456-426655440000" as FlavouredUuid;
-
-        expect(inputValue).to.equal(actualValue);
-    });
-});
+/**
+ * A TypeGuard inspects a piece of data to see if the data is the given
+ * type.
+ *
+ * If the given data is the given type, the function returns `true`.
+ * It returns `false` otherwise.
+ *
+ * TypeGuards are a form of runtime robustness check. They're used to
+ * make sure that the given input is the type you think it is, before you
+ * try and use that input. They help prevent runtime errors.
+ */
+export type TypeGuard<T> = (input: unknown) => input is T;

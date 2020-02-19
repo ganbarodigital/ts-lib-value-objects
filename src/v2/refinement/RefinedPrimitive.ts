@@ -31,18 +31,15 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
-import { expect } from "chai";
-import { describe } from "mocha";
+import { RefinedType } from "./RefinedType";
 
-import { Flavoured } from "./Flavoured";
-
-type FlavouredUuid = Flavoured<string, "uuid">;
-
-describe("v1 flavoured types", () => {
-    it("can be cast from a suitable primitive", () => {
-        const inputValue = "123e4567-e89b-12d3-a456-426655440000";
-        const actualValue = "123e4567-e89b-12d3-a456-426655440000" as FlavouredUuid;
-
-        expect(inputValue).to.equal(actualValue);
-    });
-});
+/**
+ * RefinedPrimitive is a base class for defining a subset of any primitive
+ * type (e.g. a string). The subset is defined by a contract / specification,
+ * and enforced by a DataGuarantee.
+ *
+ * `T` is the type to be wrapped.
+ */
+export abstract class RefinedPrimitive<T> extends RefinedType<T> {
+    public abstract [Symbol.toPrimitive](hint: string): string|number|boolean|null;
+}

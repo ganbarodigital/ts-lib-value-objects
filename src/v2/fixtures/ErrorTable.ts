@@ -31,18 +31,48 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
-import { expect } from "chai";
-import { describe } from "mocha";
+import {
+    ErrorTable,
+    ErrorTableTemplateWithNoExtraData,
+    ExtraDataTemplate,
+    NoExtraDataTemplate,
+    PACKAGE_NAME,
+} from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
+import { httpStatusCodeFrom } from "@ganbarodigital/ts-lib-http-types/lib/v1";
 
-import { Flavoured } from "./Flavoured";
+import { NeverABrandedUuidTemplate } from "./NeverABrandedUuid";
+import { NeverAdultAgeTemplate } from "./NeverAdultAge";
+import { NeverAFlavouredUuidTemplate } from "./NeverAFlavouredUuid";
 
-type FlavouredUuid = Flavoured<string, "uuid">;
+export class UnitTestErrorTable implements ErrorTable {
+    [key: string]: ErrorTableTemplateWithNoExtraData<any, string, ExtraDataTemplate | NoExtraDataTemplate>;
 
-describe("v1 flavoured types", () => {
-    it("can be cast from a suitable primitive", () => {
-        const inputValue = "123e4567-e89b-12d3-a456-426655440000";
-        const actualValue = "123e4567-e89b-12d3-a456-426655440000" as FlavouredUuid;
+    public "never-a-branded-uuid": NeverABrandedUuidTemplate = {
+        packageName: PACKAGE_NAME,
+        errorName: "never-a-branded-uuid",
+        status: httpStatusCodeFrom(500),
+        detail: "value is not a branded uuid",
+    };
 
-        expect(inputValue).to.equal(actualValue);
-    });
-});
+    public "never-a-flavoured-uuid": NeverAFlavouredUuidTemplate = {
+        packageName: PACKAGE_NAME,
+        errorName: "never-a-flavoured-uuid",
+        status: httpStatusCodeFrom(500),
+        detail: "value is not a flavoured uuid",
+    };
+
+    public "never-adult-age": NeverAdultAgeTemplate = {
+        packageName: PACKAGE_NAME,
+        errorName: "never-adult-age",
+        status: httpStatusCodeFrom(500),
+        detail: "value is lower than minimum adult age",
+        extra: {
+            public: {
+                // the age that we have been given
+                input: 0,
+            },
+        },
+    };
+}
+
+export const UNIT_TEST_ERROR_TABLE = new UnitTestErrorTable();

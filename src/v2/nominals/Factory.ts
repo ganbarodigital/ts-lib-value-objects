@@ -31,18 +31,46 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
-import { expect } from "chai";
-import { describe } from "mocha";
+import { OnError, THROW_THE_ERROR } from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
 
-import { Flavoured } from "./Flavoured";
+import { DataGuarantee } from "../types";
 
-type FlavouredUuid = Flavoured<string, "uuid">;
+export type RefinedTypeFactory<BI, BR> = (input: BI, onError?: OnError) => BR;
 
-describe("v1 flavoured types", () => {
-    it("can be cast from a suitable primitive", () => {
-        const inputValue = "123e4567-e89b-12d3-a456-426655440000";
-        const actualValue = "123e4567-e89b-12d3-a456-426655440000" as FlavouredUuid;
+/**
+ * makeRefinedTypeFactory creates factories for your branded and
+ * flavoured types.
+ *
+ * You tell it:
+ *
+ * - what input type your factory should accept
+ * - the DataGuarantee to enforce
+ * - the default error handler to call if the DataGuarantee fails
+ * - what output type your factory should return
+ *
+ * and it will return a type-safe function that you can re-use to validate
+ * and create your branded and flavoured types.
+ *
+ * `BI` is the input type that your factory accepts (e.g. `string`)
+ * `BR` is the type that your factory returns
+ *
+ * @param mustBe
+ *        this will be called every time you use the function that we return.
+ *        Make sure that it has no side-effects whatsoever.
+ * @param defaultOnError
+ *        the function that we return has an optional `onError` parameter.
+ *        If the caller doesn't provide an `onError` parameter, the function
+ *        will call this error handler instead.
+ */
+export const makeRefinedTypeFactory = <BI, BR>(
+    mustBe: DataGuarantee<BI>,
+    defaultOnError: OnError = THROW_THE_ERROR,
+): RefinedTypeFactory<BI, BR> => {
+    return (input: BI, onError: OnError = defaultOnError): BR => {
+        // enforce the contract
+        mustBe(input, onError);
 
-        expect(inputValue).to.equal(actualValue);
-    });
-});
+        // we're good at this point
+        return (input as unknown) as BR;
+    };
+};
