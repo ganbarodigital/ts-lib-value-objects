@@ -834,7 +834,7 @@ _Branded types_ and _flavoured types_ don't give you the same level of type safe
 Unfortunately, **TypeScript won't tell you if you mix these types in an operation:**
 
 ```typescript
-import { Branded } from "@ganbarodigital/ts-lib-value-objects/v2";
+import { Branded } from "@ganbarodigital/ts-lib-value-objects/lib/v2";
 
 type Inches = Branded<number, "inches">;
 type Centimetres = Branded<number, "centimetres">;
@@ -849,7 +849,7 @@ const c = a + b;
 To use _branded types_ and _flavoured types_ safely, make sure that you wrap any operations in a function:
 
 ```typescript
-import { Branded } from "@ganbarodigital/ts-lib-value-objects/v2";
+import { Branded } from "@ganbarodigital/ts-lib-value-objects/lib/v2";
 
 type Inches = Branded<number, "inches">;
 type Centimetres = Branded<number, "centimetres">;
