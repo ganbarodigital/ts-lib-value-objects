@@ -36,13 +36,15 @@ import {
     ErrorTableTemplateWithNoExtraData,
     ExtraDataTemplate,
     NoExtraDataTemplate,
-    PACKAGE_NAME,
 } from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
 import { httpStatusCodeFrom } from "@ganbarodigital/ts-lib-http-types/lib/v1";
+import { packageNameFrom } from "@ganbarodigital/ts-lib-packagename/lib/v1";
 
 import { NeverABrandedUuidTemplate } from "./NeverABrandedUuid";
 import { NeverAdultAgeTemplate } from "./NeverAdultAge";
 import { NeverAFlavouredUuidTemplate } from "./NeverAFlavouredUuid";
+
+const PACKAGE_NAME = packageNameFrom("@ganbarodigital/ts-lib-value-objects/lib/v2");
 
 export class UnitTestErrorTable implements ErrorTable {
     [key: string]: ErrorTableTemplateWithNoExtraData<any, string, ExtraDataTemplate | NoExtraDataTemplate>;
