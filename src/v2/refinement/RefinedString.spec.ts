@@ -36,7 +36,7 @@ import { expect } from "chai";
 import { describe } from "mocha";
 
 import { NeverABrandedUuidError } from "../fixtures";
-import { ValueObject } from "../types/ValueObject";
+import { ValueObject } from "../types/";
 import { RefinedString } from "./RefinedString";
 
 function mustBeUuid(input: string): void {
