@@ -21,6 +21,16 @@ For each release, changes are grouped under these headings:
 
 The following changes have been completed, and will be included in the next tagged release.
 
+## v1.1.2
+
+Released Thursday, 20th February 2020.
+
+### Dependencies
+
+* Some of our v2 types are now re-exports from ts-lib-error-reporting
+  - Fixes circular dependencies issues
+  - Ensures we remain consistent across these packages
+
 ## v1.1.1
 
 Released Thursday, 20th February 2020.

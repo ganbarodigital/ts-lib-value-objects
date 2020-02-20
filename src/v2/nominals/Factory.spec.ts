@@ -35,11 +35,9 @@ import { AnyAppError, OnError } from "@ganbarodigital/ts-lib-error-reporting/lib
 import { expect } from "chai";
 import { describe } from "mocha";
 
+import { Branded, Flavoured, makeRefinedTypeFactory, RefinedTypeFactory } from ".";
 import { NeverABrandedUuidError } from "../fixtures";
 import { NeverAFlavouredUuidError } from "../fixtures/NeverAFlavouredUuid";
-import { Branded } from "./Branded";
-import { makeRefinedTypeFactory, RefinedTypeFactory } from "./Factory";
-import { Flavoured } from "./Flavoured";
 
 function defaultErrorHandler(e: AnyAppError): never {
     throw new Error("DEFAULT ERROR HANDLER CALLED");

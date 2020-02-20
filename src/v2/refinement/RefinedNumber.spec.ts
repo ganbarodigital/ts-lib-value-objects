@@ -36,7 +36,7 @@ import { expect } from "chai";
 import { describe } from "mocha";
 
 import { NeverAdultAgeError } from "../fixtures";
-import { ValueObject } from "../types/ValueObject";
+import { ValueObject } from "../types/";
 import { RefinedNumber } from "./RefinedNumber";
 
 function mustBeAdultAge(input: number): void {

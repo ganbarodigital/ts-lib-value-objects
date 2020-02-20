@@ -34,7 +34,7 @@
 import { expect } from "chai";
 import { describe } from "mocha";
 
-import { Flavoured } from "./Flavoured";
+import { Flavoured } from ".";
 
 type FlavouredUuid = Flavoured<string, "uuid">;
 

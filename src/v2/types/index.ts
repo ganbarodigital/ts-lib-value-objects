@@ -33,10 +33,9 @@
 //
 
 export * from "./DataCoercion";
-export * from "./DataGuarantee";
+export { DataGuarantee } from "@ganbarodigital/ts-lib-error-reporting/lib/v1/internal/types";
 export * from "./DataGuard";
 export * from "./Entity";
 export * from "./EntityObject";
 export * from "./TypeGuard";
-export * from "./Value";
-export * from "./ValueObject";
+export { Value, ValueObject } from "@ganbarodigital/ts-lib-error-reporting/lib/v1/internal/types";

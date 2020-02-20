@@ -34,7 +34,7 @@
 import { expect } from "chai";
 import { describe } from "mocha";
 
-import { ValueObject } from "./ValueObject";
+import { ValueObject } from ".";
 
 class ExampleValue extends ValueObject<string> {
     public static from(input: string): ExampleValue {
