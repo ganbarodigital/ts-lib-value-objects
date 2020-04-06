@@ -23,6 +23,7 @@ The following changes have been completed, and will be included in the next tagg
 
 ### Dependencies
 
+* Upgraded everything to fix a vulnerability in `minimist`
 * Moved TypeScript et al into the `devDependencies` section
 
 ## v1.1.2
