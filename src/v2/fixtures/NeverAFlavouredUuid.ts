@@ -34,7 +34,7 @@
 import {
     AppError,
     AppErrorParams,
-    ErrorTableTemplateWithNoExtraData,
+    ErrorTableTemplate,
     NoExtraDataTemplate,
     StructuredProblemReport,
     StructuredProblemReportDataWithNoExtraData,
@@ -43,10 +43,9 @@ import {
 import { UNIT_TEST_ERROR_TABLE, UnitTestErrorTable } from "./ErrorTable";
 
 export type NeverAFlavouredUuidExtraData = NoExtraDataTemplate;
-export type NeverAFlavouredUuidTemplate = ErrorTableTemplateWithNoExtraData<
+export type NeverAFlavouredUuidTemplate = ErrorTableTemplate<
     UnitTestErrorTable,
-    "never-a-flavoured-uuid",
-    NeverAFlavouredUuidExtraData
+    "never-a-flavoured-uuid"
 >;
 export type NeverAFlavouredUuidData = StructuredProblemReportDataWithNoExtraData<
     UnitTestErrorTable,

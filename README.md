@@ -1,5 +1,7 @@
 # Value Objects for Typescript
 
+![Node.js CI](https://github.com/ganbarodigital/ts-lib-value-objects/workflows/Node.js%20CI/badge.svg)
+
 ## Introduction
 
 This TypeScript library will help you create _value objects_ and _refined types_. They will help you write safer software that also performs better.

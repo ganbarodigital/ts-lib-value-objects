@@ -31,12 +31,7 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
-import {
-    ErrorTable,
-    ErrorTableTemplateWithNoExtraData,
-    ExtraDataTemplate,
-    NoExtraDataTemplate,
-} from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
+import { ErrorTable, ErrorTableTemplate } from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
 import { httpStatusCodeFrom } from "@ganbarodigital/ts-lib-http-types/lib/v1";
 import { packageNameFrom } from "@ganbarodigital/ts-lib-packagename/lib/v1";
 
@@ -46,8 +41,10 @@ import { NeverAFlavouredUuidTemplate } from "./NeverAFlavouredUuid";
 
 const PACKAGE_NAME = packageNameFrom("@ganbarodigital/ts-lib-value-objects/lib/v2");
 
+type PackageErrorTableIndex<T extends ErrorTable> = ErrorTableTemplate<T, string>;
+
 export class UnitTestErrorTable implements ErrorTable {
-    [key: string]: ErrorTableTemplateWithNoExtraData<any, string, ExtraDataTemplate | NoExtraDataTemplate>;
+    [key: string]: PackageErrorTableIndex<UnitTestErrorTable>;
 
     public "never-a-branded-uuid": NeverABrandedUuidTemplate = {
         packageName: PACKAGE_NAME,
@@ -68,12 +65,6 @@ export class UnitTestErrorTable implements ErrorTable {
         errorName: "never-adult-age",
         status: httpStatusCodeFrom(500),
         detail: "value is lower than minimum adult age",
-        extra: {
-            public: {
-                // the age that we have been given
-                input: 0,
-            },
-        },
     };
 }
 
