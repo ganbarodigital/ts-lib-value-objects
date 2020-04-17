@@ -21,6 +21,10 @@ For each release, changes are grouped under these headings:
 
 The following changes have been completed, and will be included in the next tagged release.
 
+### Tools
+
+* Upgraded the `scripts` section in `package.json` to our latest standard.
+
 ## v1.1.4
 
 Released Friday, 17th April 2020.
