@@ -34,7 +34,7 @@
 import {
     AppError,
     AppErrorParams,
-    ErrorTableTemplateWithExtraData,
+    ErrorTableTemplate,
     ExtraPublicData,
     StructuredProblemReport,
     StructuredProblemReportDataWithExtraData,
@@ -48,10 +48,9 @@ export interface NeverAdultAgeExtraData extends ExtraPublicData {
     };
 }
 
-export type NeverAdultAgeTemplate = ErrorTableTemplateWithExtraData<
+export type NeverAdultAgeTemplate = ErrorTableTemplate<
     UnitTestErrorTable,
-    "never-adult-age",
-    NeverAdultAgeExtraData
+    "never-adult-age"
 >;
 export type NeverAdultAgeData = StructuredProblemReportDataWithExtraData<
     UnitTestErrorTable,
