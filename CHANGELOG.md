@@ -21,6 +21,12 @@ For each release, changes are grouped under these headings:
 
 The following changes have been completed, and will be included in the next tagged release.
 
+### Backwards-Compatibility Breaks
+
+We have dropped the old 'V1' API from the code. The V1 API had a dependency that was triggering an `npm audit` alert. The alert is in old unit test tools, so it should be difficult to exploit. 
+
+It's really our fault for tagging a 'v1.0' release of this library before it was mature enough. We haven't publicised this library at all, and NPM isn't showing anyone using it in their own packages, so we've decided that, in this case, there's no need to maintain the V1 API any longer.
+
 ### Tools
 
 * Upgraded the `scripts` section in `package.json` to our latest standard.
