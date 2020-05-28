@@ -21,6 +21,10 @@ For each release, changes are grouped under these headings:
 
 The following changes have been completed, and will be included in the next tagged release.
 
+## v2.0.0
+
+Released Thursday, 28th May 2020.
+
 ### Backwards-Compatibility Breaks
 
 We have dropped the old 'V1' API from the code. The V1 API had a dependency that was triggering an `npm audit` alert. The alert is in old unit test tools, so it should be difficult to exploit. 

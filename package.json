@@ -1,6 +1,6 @@
 {
   "name": "@ganbarodigital/ts-lib-value-objects",
-  "version": "1.1.4",
+  "version": "2.0.0",
   "description": "Helps you create value objects and refined types for safer software",
   "repository": "github:ganbarodigital/ts-lib-value-objects",
   "main": "lib/index.js",
