@@ -6,7 +6,7 @@
 
 This TypeScript library will help you create _value objects_ and _refined types_. They will help you write safer software that also performs better.
 
-**NOTE: This README documents the `v2` API. The older `V1` API is documented [here](./src/V1/README.md)**
+**NOTE: This README documents the `v2` API. The older `V1` API has been dropped.**
 
 - [Introduction](#introduction)
 - [Quick Start](#quick-start)

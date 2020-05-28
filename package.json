@@ -1,16 +1,16 @@
 {
   "name": "@ganbarodigital/ts-lib-value-objects",
-  "version": "1.1.4",
+  "version": "2.0.0",
   "description": "Helps you create value objects and refined types for safer software",
   "repository": "github:ganbarodigital/ts-lib-value-objects",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "build": "npm run clean && tsc",
-    "lint": "tslint -p tsconfig.json",
-    "prepublishOnly": "npm test && npm run lint",
+    "build": "npm run clean && npm run lint && tsc",
+    "lint": "tslint -p ./tsconfig.json",
+    "prepublishOnly": "npm run test",
     "prepack": "npm run build",
-    "test": "npm run clean && tsc && mocha -r ts-node/register \"src/**/*.spec.ts\"",
+    "test": "npm run build && mocha -r ts-node/register \"src/**/*.spec.ts\"",
     "cover": "rimraf coverage && rimraf .nyc_output && nyc --cache=false npm run test",
     "clean": "rimraf lib"
   },
@@ -40,8 +40,7 @@
   "dependencies": {
     "@ganbarodigital/ts-lib-error-reporting": "^0.3.0",
     "@ganbarodigital/ts-lib-http-types": "^0.3.0",
-    "@ganbarodigital/ts-lib-packagename": "^0.3.0",
-    "@ganbarodigital/ts-on-error": "^0.0.2"
+    "@ganbarodigital/ts-lib-packagename": "^0.3.0"
   },
   "devDependencies": {
     "@types/chai": "^4.2.11",
