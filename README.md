@@ -37,6 +37,7 @@ This TypeScript library will help you create _value objects_ and _refined types_
   - [Type Flavouring](#type-flavouring)
   - [Gotchas For Branded Types And Flavoured Types](#gotchas-for-branded-types-and-flavoured-types)
   - [makeRefinedTypeFactory()](#makerefinedtypefactory)
+  - [makeRefinedTypeFactoryWithFormatter()](#makerefinedtypefactorywithformatter)
   - [Advantages Of Refined Types](#advantages-of-refined-types)
   - [Disadvantages Of Refined Types](#disadvantages-of-refined-types)
 - [Refined Types As Value Objects](#refined-types-as-value-objects)
@@ -912,6 +913,60 @@ export const makeRefinedTypeFactory = <BI, BR>(
 You pass in your _data guarantee_ and a default `OnError` handler, and `makeRefinedTypeFactory()` returns a function that you can use as a _smart constructor_.
 
 See the [Type Branding](#type-branding) example code above to see it in action.
+
+### makeRefinedTypeFactoryWithFormatter()
+
+`makeRefinedTypeFactoryWithFormatter()` builds your _smart constructor_ for you.
+
+```typescript
+export type RefinedTypeFactory<BI, BR> = (input: BI, onError?: OnError) => BR;
+
+/**
+ * makeRefinedTypeFactoryWithFormatter creates factories for your branded and
+ * flavoured types that support an extra data formatting stage.
+ *
+ * You tell it:
+ *
+ * - what input type your factory should accept
+ * - the DataGuarantee to enforce
+ * - the default error handler to call if the DataGuarantee fails
+ * - how to reformat the input before it is returned
+ * - what output type your factory should return
+ *
+ * and it will return a type-safe function that you can re-use to validate
+ * and create your branded and flavoured types.
+ *
+ * `BI` is the input type that your factory accepts (e.g. `string`)
+ * `BR` is the type that your factory returns
+ *
+ * @param mustBe
+ *        this will be called every time you use the function that we return.
+ *        Make sure that it has no side-effects whatsoever.
+ * @param formatter
+ *        this will be called after validation. Use this to modify the
+ *        returned value (e.g. to convert a string to lowercase)
+ * @param defaultOnError
+ *        the function that we return has an optional `onError` parameter.
+ *        If the caller doesn't provide an `onError` parameter, the function
+ *        will call this error handler instead.
+ */
+export const makeRefinedTypeFactoryWithFormatter = <BI, BR>(
+    mustBe: DataGuarantee<BI>,
+    formatter: (input: BI) => BI,
+    defaultOnError: OnError = THROW_THE_ERROR,
+): RefinedTypeFactory<BI, BR>;
+```
+
+This is a variant of `makeRefinedTypeFactory()`. It takes an additional parameter - the `formatter`. The `formatter` is a function used to format the value before it is returned.
+
+For example, you can force the return value to be a lower-case string like this:
+
+```typescript
+const contentTypeFrom = makeRefinedTypeFactoryWithFormatter(
+    mustBeContentType,
+    (x) => x.toLowerCase
+);
+```
 
 ### Advantages Of Refined Types
 
